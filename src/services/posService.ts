@@ -1,7 +1,6 @@
 import { collection, addDoc, updateDoc, doc, runTransaction, getDoc, Timestamp } from 'firebase/firestore';
 import { db } from '@/config/firebase';
 import { Product, POSTransaction } from '@/types';
-import { toast } from '@/hooks/use-toast';
 import { updateDailySales } from './dailySalesService';
 
 // Process a POS transaction and update inventory
@@ -10,9 +9,11 @@ export const processPOSTransaction = async (transaction: Omit<POSTransaction, 'i
     console.log('Processing POS transaction:', JSON.stringify(transaction, null, 2));
     let transactionId = '';
     
-    // Use a transaction to ensure atomicity
-    await runTransaction(db, async (firestoreTransaction) => {
-      // Update product stock for each item
+    // STEP 1: First perform all reads in a transaction to check stock
+    const productUpdates = await runTransaction(db, async (firestoreTransaction) => {
+      const updates = [];
+      
+      // Read all product documents first to check stock
       for (const item of transaction.items) {
         const productRef = doc(db, 'products', item.product.id);
         const productDoc = await firestoreTransaction.get(productRef);
@@ -28,15 +29,29 @@ export const processPOSTransaction = async (transaction: Omit<POSTransaction, 'i
           throw new Error(`Not enough stock for ${item.product.name}. Available: ${productData.stock}, Requested: ${item.quantity}`);
         }
         
-        // Update stock
-        firestoreTransaction.update(productRef, {
-          stock: productData.stock - item.quantity,
+        // Store update for later execution
+        updates.push({
+          productRef,
+          currentStock: productData.stock,
+          quantityToReduce: item.quantity
+        });
+      }
+      
+      return updates;
+    });
+    
+    // STEP 2: Now perform all writes in a separate transaction
+    await runTransaction(db, async (firestoreTransaction) => {
+      // Update stock for all products
+      for (const update of productUpdates) {
+        firestoreTransaction.update(update.productRef, {
+          stock: update.currentStock - update.quantityToReduce,
           updated_at: new Date().toISOString()
         });
       }
     });
     
-    // Create transaction record
+    // STEP 3: Create transaction record
     try {
       // Get current date in YYYY-MM-DD format for easier filtering
       const transactionDateString = new Date().toISOString().split('T')[0];
@@ -95,16 +110,18 @@ export const processPOSTransaction = async (transaction: Omit<POSTransaction, 'i
       
       console.log('Financial transaction record created');
       
-      // Update daily sales record
-      await updateDailySales(transactionDateString, transaction.totalAmount);
+      // STEP 4: Update daily sales record
+      try {
+        await updateDailySales(transactionDateString, transaction.totalAmount);
+      } catch (dailySalesError) {
+        console.error('Error updating daily sales:', dailySalesError);
+        // Continue execution even if daily sales update fails
+      }
       
     } catch (error) {
       console.error('Error saving transaction records:', error);
-      toast({
-        title: "Error",
-        description: "Transaction was processed but records may be incomplete",
-        variant: "destructive"
-      });
+      // Log error but don't throw to ensure we return the transaction ID
+      console.warn("Transaction was processed but records may be incomplete");
     }
     
     return transactionId;
