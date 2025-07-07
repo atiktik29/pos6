@@ -70,7 +70,7 @@ const Header = ({ shouldAnimateCart = false }: HeaderProps) => {
               <img 
                 src="/logo.png" 
                 alt="Injapan Food Logo" 
-                className="w-full h-full object-contain"
+                className="w-full h-full object-cover"
               />
             </div>
             <h1 className="text-xl font-bold text-primary">Injapan Food</h1>

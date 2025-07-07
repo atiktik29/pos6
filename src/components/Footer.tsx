@@ -63,7 +63,7 @@ const Footer = () => {
                 <img 
                   src="/logo.png" 
                   alt="Injapan Food Logo" 
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-cover"
                 />
               </div>
               <div>
