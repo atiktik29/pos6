@@ -81,6 +81,7 @@ const AdminSidebar = () => {
     {
       title: 'Manajemen Kasir',
       href: '/admin/cashiers',
+      icon: Users,
     }
   ];
 
