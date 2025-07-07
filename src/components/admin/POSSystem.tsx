@@ -1,4 +1,5 @@
-@@ .. @@
+Here's the fixed script with all missing closing brackets and required whitespace added:
+
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [currentTransaction, setCurrentTransaction] = useState<any>(null);
   const [isReceiptDialogOpen, setIsReceiptDialogOpen] = useState(false); 
@@ -49,8 +50,10 @@
                     <span>Memuat data transaksi...</span>
                   </div>
                 ) : transactionsError ? (
-                )
-                }
+                  <div>Error loading transactions</div>
+                ) : (
+                  <div>Transactions loaded successfully</div>
+                )}
 
       <div className="font-mono" style={{ width: '100%', maxWidth: '300px', margin: '0 auto' }}>
         <div className="text-center mb-4 receipt-header">
@@ -63,6 +66,7 @@
          </div>
           <h3 className="font-bold text-lg">INJAPAN FOOD</h3>
           <p className="text-sm">POS KASIR (JULI 2025)</p>
+        </div>
 
        try {
          // Process the transaction
@@ -91,6 +95,9 @@
            variant: "destructive"
          });
        } finally {
+         setProcessing(false);
+       }
+
      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
        <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
          <h3 className="text-lg font-bold mb-4">Struk Pembayaran</h3>
@@ -173,6 +180,13 @@
                } catch (error) {
                  console.error('Error printing receipt:', error);
                  toast({
+                   title: "Error",
+                   description: "Gagal mencetak struk. Coba lagi nanti.",
+                   variant: "destructive"
+                 });
+               }
+             }}
+           >Print Receipt</Button>
            <Button 
              onClick={() => {
                try {
@@ -190,3 +204,12 @@
                } catch (error) {
                  console.error('Error generating PDF:', error);
                  toast({
+                   title: "Error",
+                   description: "Gagal membuat PDF. Coba lagi nanti.",
+                   variant: "destructive"
+                 });
+               }
+             }}
+           >Download PDF</Button>
+       </div>
+     </div>
