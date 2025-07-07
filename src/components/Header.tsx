@@ -68,7 +68,7 @@ const Header = ({ shouldAnimateCart = false }: HeaderProps) => {
           <div onClick={() => handleNavClick('/')} className="flex items-center space-x-3 cursor-pointer">
             <div className="w-12 h-12 rounded-full overflow-hidden">
               <img 
-                src="/logo.jpg" 
+                src="/logo.png" 
                 alt="Injapan Food Logo" 
                 className="w-full h-full object-contain"
               />

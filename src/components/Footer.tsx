@@ -61,7 +61,7 @@ const Footer = () => {
             <div className="flex items-center space-x-3 mb-6">
               <div className="w-14 h-14 rounded-full overflow-hidden flex-shrink-0">
                 <img 
-                  src="/logo.jpg" 
+                  src="/logo.png" 
                   alt="Injapan Food Logo" 
                   className="w-full h-full object-contain"
                 />

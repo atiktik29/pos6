@@ -56,7 +56,7 @@ const PWAInstallPrompt = () => {
       <div className="flex items-center">
         <div className="mr-4 flex-shrink-0">
           <img 
-            src="/logo.jpg" 
+            src="/logo.png" 
             alt="Injapan Food Logo" 
             className="w-12 h-12 rounded-full object-contain"
           />

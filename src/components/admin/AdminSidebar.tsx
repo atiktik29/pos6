@@ -80,7 +80,7 @@ const AdminSidebar = () => {
         <div className="flex items-center space-x-3 mb-3">
           <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
             <img 
-              src="/logo.jpg" 
+              src="/logo.png" 
               alt="Injapan Food Logo" 
               className="w-full h-full object-contain"
             />
