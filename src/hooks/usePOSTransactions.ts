@@ -29,6 +29,9 @@ export const usePOSTransactions = (date?: string) => {
       // Reset time to start of day
       const startOfDay = new Date(selectedDate);
       startOfDay.setHours(0, 0, 0, 0);
+    }
+  }
+  )
   // POS feature removed
   return {
     totalSales: 0,
