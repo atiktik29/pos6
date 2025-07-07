@@ -76,12 +76,6 @@ export const usePOSTransactions = (date?: string) => {
       const unsubscribe = onSnapshot(q, (snapshot) => {
         try {
           console.log(`Real-time snapshot received with ${snapshot.size} documents for date ${date || 'today'}`);
-            if (!t.createdAt || typeof t.createdAt !== 'string') {
-            console.log('No POS transactions found');
-            setTransactions([]);
-            setLoading(false);
-            return;
-          }
           
           let transactionData: POSTransaction[] = [];
           snapshot.forEach((doc) => {
@@ -117,27 +111,6 @@ export const usePOSTransactions = (date?: string) => {
               console.error(`Error processing transaction document ${doc.id}:`, docError);
             }
           });
-          
-          // Filter by date client-side instead of in the query
-          /* No longer needed as we're filtering in the query
-          if (false && date) {
-            console.log(`Filtering transactions by date: ${date}`);
-            try {
-              transactionData = transactionData.filter(t => {
-                if (!t.createdAt) {
-                  console.log(`Transaction ${t.id} has no createdAt field`);
-                  return false;
-                }
-                
-                const txDate = new Date(t.createdAt);
-                const isInRange = txDate >= new Date(startDateStr) && txDate < new Date(endDateStr);
-                return isInRange;
-              });
-              console.log(`After filtering: ${transactionData.length} transactions match the date range`);
-            } catch (filterError) {
-              console.error('Error filtering transactions by date:', filterError);
-            }
-          }*/
 
           // Sort manually since we're not using orderBy
           transactionData.sort((a, b) => {
@@ -217,12 +190,6 @@ export const getPOSTransactionsByDateRange = async (startDate: Date, endDate: Da
           return;
         }
         
-        // Convert Firestore timestamp to Date object
-        const timestamp = data.timestamp.toDate ? data.timestamp.toDate() : new Date();
-            // Check if date is valid
-            if (isNaN(txDate.getTime())) {
-              console.log(`Transaction ${t.id} has invalid createdAt date: ${t.createdAt}`);
-              return false;
         let createdAt;
         try {
           // Convert Firestore timestamp to Date object
@@ -253,26 +220,6 @@ export const getPOSTransactionsByDateRange = async (startDate: Date, endDate: Da
       transactions.sort((a, b) => {
         // Use timestamp for sorting if available, with validation
         let dateA, dateB;
-        
-        try {
-          dateA = a.timestamp?.toDate 
-            ? a.timestamp.toDate().getTime() 
-            : (typeof a.createdAt === 'string' && a.createdAt 
-              ? new Date(a.createdAt).getTime() 
-              : 0);
-        } catch (e) {
-          dateA = 0;
-        }
-        
-        try {
-          dateB = b.timestamp?.toDate 
-            ? b.timestamp.toDate().getTime() 
-            : (typeof b.createdAt === 'string' && b.createdAt 
-              ? new Date(b.createdAt).getTime() 
-              : 0);
-        } catch (e) {
-          dateB = 0;
-        }
         
         try {
           dateA = a.timestamp?.toDate 
