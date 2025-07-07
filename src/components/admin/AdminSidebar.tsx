@@ -11,8 +11,6 @@ import {
   CreditCard,
   Percent,
   DollarSign,
-  ShoppingBag,
-  UserCog
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -82,18 +80,6 @@ const AdminSidebar = () => {
     {
       title: 'Manajemen Kasir',
       href: '/admin/cashiers',
-      icon: UserCog,
-      description: 'Cashier management'
-    },
-    {
-      title: 'Import/Export',
-      href: '/admin/import-export',
-      icon: Upload,
-    },
-    {
-      title: 'Recycle Bin',
-      href: '/admin/recycle-bin',
-      icon: Trash2,
     }
   ];
 

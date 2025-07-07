@@ -196,7 +196,7 @@ export interface PaymentProof {
   status: 'pending' | 'verified' | 'rejected';
 }
 
-// POS Transaction interface
+// POS Transaction interface - kept for type references but feature removed
 export interface POSTransaction {
   id: string;
   items: Array<{

@@ -110,8 +110,3 @@
     }
   }
 }
-
-/* Print styles for POS receipt */
-@media print {
-  /* Print styles removed as part of the receipt/invoice feature removal */
-}
