@@ -85,7 +85,7 @@ const POSSystem = () => {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [currentTransaction, setCurrentTransaction] = useState<any>(null);
   const [isReceiptDialogOpen, setIsReceiptDialogOpen] = useState(false); 
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [selectedCashier, setSelectedCashier] = useState<Cashier | null>(null);
   const receiptRef = useRef<HTMLDivElement>(null);
   
@@ -312,7 +312,8 @@ const POSSystem = () => {
     setIsRefreshing(true);
     // Force re-render by changing the date slightly and then back
     const currentDate = selectedDate;
-    setSelectedDate('refresh-trigger');
+    // Use a valid date format for the temporary value
+    setSelectedDate(new Date().toISOString().split('T')[0]);
     setTimeout(() => {
       setSelectedDate(currentDate);
       setIsRefreshing(false);

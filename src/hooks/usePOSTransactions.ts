@@ -14,7 +14,19 @@ export const usePOSTransactions = (date?: string) => {
     
     try {
       // Set date range for query
-      const selectedDate = date ? new Date(date) : new Date();
+      // Validate date string before creating Date object
+      const selectedDate = date && /^\d{4}-\d{2}-\d{2}$/.test(date) 
+        ? new Date(date) 
+        : new Date();
+        
+      // Check if date is valid
+      if (isNaN(selectedDate.getTime())) {
+        console.error('Invalid date provided:', date);
+        setLoading(false);
+        setError(new Error('Invalid date format'));
+        return () => {};
+      }
+      
       // Reset time to start of day
       const startOfDay = new Date(selectedDate);
       startOfDay.setHours(0, 0, 0, 0);
@@ -64,7 +76,7 @@ export const usePOSTransactions = (date?: string) => {
       const unsubscribe = onSnapshot(q, (snapshot) => {
         try {
           console.log(`Real-time snapshot received with ${snapshot.size} documents for date ${date || 'today'}`);
-          if (snapshot.empty) {
+            if (!t.createdAt || typeof t.createdAt !== 'string') {
             console.log('No POS transactions found');
             setTransactions([]);
             setLoading(false);
@@ -169,6 +181,12 @@ export const usePOSTransactions = (date?: string) => {
 
 export const getPOSTransactionsByDateRange = async (startDate: Date, endDate: Date) => {
   try {
+    // Validate dates
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+      console.error('Invalid date range provided:', { startDate, endDate });
+      return [];
+    }
+    
     // Reset time to start of day
     startDate.setHours(0, 0, 0, 0);
     endDate.setHours(23, 59, 59, 999);
@@ -194,14 +212,35 @@ export const getPOSTransactionsByDateRange = async (startDate: Date, endDate: Da
       snapshot.forEach((doc) => {
         const data = doc.data() as any;
         // Ensure we have a valid timestamp
-        if (!data.timestamp) {
+        if (!data.timestamp && !data.createdAt) {
           console.warn(`Transaction ${doc.id} has no timestamp, skipping`);
           return;
         }
         
         // Convert Firestore timestamp to Date object
         const timestamp = data.timestamp.toDate ? data.timestamp.toDate() : new Date();
-        const createdAt = timestamp.toISOString();
+            // Check if date is valid
+            if (isNaN(txDate.getTime())) {
+              console.log(`Transaction ${t.id} has invalid createdAt date: ${t.createdAt}`);
+              return false;
+        let createdAt;
+        try {
+          // Convert Firestore timestamp to Date object
+          const timestamp = data.timestamp?.toDate 
+            ? data.timestamp.toDate() 
+            : (data.createdAt ? new Date(data.createdAt) : new Date());
+          
+          // Validate the date
+          if (isNaN(timestamp.getTime())) {
+            console.warn(`Transaction ${doc.id} has invalid timestamp, using current date`);
+            createdAt = new Date().toISOString();
+          } else {
+            createdAt = timestamp.toISOString();
+          }
+        } catch (e) {
+          console.warn(`Error processing timestamp for transaction ${doc.id}:`, e);
+          createdAt = new Date().toISOString();
+        }
         
         transactions.push({ 
           id: doc.id, 
@@ -212,9 +251,49 @@ export const getPOSTransactionsByDateRange = async (startDate: Date, endDate: Da
       
       // Sort manually by date
       transactions.sort((a, b) => {
-        // Use timestamp for sorting if available
-        const dateA = a.timestamp?.toDate ? a.timestamp.toDate().getTime() : new Date(a.createdAt).getTime();
-        const dateB = b.timestamp?.toDate ? b.timestamp.toDate().getTime() : new Date(b.createdAt).getTime();
+        // Use timestamp for sorting if available, with validation
+        let dateA, dateB;
+        
+        try {
+          dateA = a.timestamp?.toDate 
+            ? a.timestamp.toDate().getTime() 
+            : (typeof a.createdAt === 'string' && a.createdAt 
+              ? new Date(a.createdAt).getTime() 
+              : 0);
+        } catch (e) {
+          dateA = 0;
+        }
+        
+        try {
+          dateB = b.timestamp?.toDate 
+            ? b.timestamp.toDate().getTime() 
+            : (typeof b.createdAt === 'string' && b.createdAt 
+              ? new Date(b.createdAt).getTime() 
+              : 0);
+        } catch (e) {
+          dateB = 0;
+        }
+        
+        try {
+          dateA = a.timestamp?.toDate 
+            ? a.timestamp.toDate().getTime() 
+            : (typeof a.createdAt === 'string' && a.createdAt 
+              ? new Date(a.createdAt).getTime() 
+              : 0);
+        } catch (e) {
+          dateA = 0;
+        }
+        
+        try {
+          dateB = b.timestamp?.toDate 
+            ? b.timestamp.toDate().getTime() 
+            : (typeof b.createdAt === 'string' && b.createdAt 
+              ? new Date(b.createdAt).getTime() 
+              : 0);
+        } catch (e) {
+          dateB = 0;
+        }
+        
         return dateB - dateA;
       });
       
