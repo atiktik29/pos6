@@ -1,3 +1,78 @@
+/**
+ * Generate a PDF receipt for POS transactions
+ * @param element The HTML element containing the receipt
+ * @param transactionId Transaction ID for the filename
+ */
+export const generateReceiptPDF = async (element: HTMLElement | null, transactionId: string) => {
+  if (!element) {
+    console.error('Receipt element not found for PDF generation');
+    return;
+  }
+
+  try {
+    // Import html2canvas and jsPDF dynamically with error handling
+    let html2canvas, jsPDF;
+    try {
+      html2canvas = (await import('html2canvas')).default;
+      jsPDF = (await import('jspdf')).default;
+    } catch (importError) {
+      console.error('Error importing PDF libraries:', importError);
+      alert('Failed to load PDF generation libraries. Please try again later.');
+      return;
+    }
+
+    // Configure html2canvas options for better quality with error handling
+    let canvas;
+    try {
+      canvas = await html2canvas(element, {
+        scale: 3, // Higher resolution for better quality
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        width: element.scrollWidth,
+        height: element.scrollHeight,
+        scrollX: 0,
+        scrollY: 0
+      });
+    } catch (canvasError) {
+      console.error('Error creating canvas:', canvasError);
+      alert('Failed to generate PDF. Please try again.');
+      return;
+    }
+
+    const imgData = canvas.toDataURL('image/png');
+    
+    // Create PDF with thermal receipt dimensions (80mm width)
+    try {
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: [80, 297] // 80mm width (standard receipt), A4 height
+      });
+      
+      const imgWidth = 70; // Slightly less than 80mm to account for margins
+      const imgHeight = canvas.height * imgWidth / canvas.width;
+      
+      pdf.addImage(imgData, 'PNG', 5, 5, imgWidth, imgHeight);
+      pdf.save(`receipt-${transactionId}.pdf`);
+    } catch (pdfError) {
+      console.error('Error creating or saving PDF:', pdfError);
+      alert('Failed to generate PDF. Please try again.');
+    }
+  } catch (error) {
+    console.error('Error generating receipt PDF:', error);
+    
+    // Fallback: open print dialog
+    try {
+      window.print();
+    } catch (printError) {
+      console.error('Print fallback also failed:', printError);
+      alert('Failed to generate PDF and print fallback also failed. Please try again later.');
+    }
+  }
+};
+
 export const generateInvoicePDF = async (element: HTMLElement | null, invoiceNumber: string) => {
   if (!element) {
     console.error('Element not found for PDF generation');

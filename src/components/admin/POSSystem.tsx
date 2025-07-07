@@ -63,3 +63,137 @@
          </div>
           <h3 className="font-bold text-lg">INJAPAN FOOD</h3>
           <p className="text-sm">POS KASIR (JULI 2025)</p>
+
+       try {
+         // Process the transaction
+         const transactionId = await processPOSTransaction(transactionData);
+        
+        // Show success toast after transaction is processed
+        toast({
+          title: "Transaksi Berhasil",
+          description: "Transaksi telah berhasil diproses dan disimpan",
+        });
+         
+         // Reset the cart
+         setCart([]);
+         setPaymentMethod('cash');
+         setShowReceipt(true);
+         setCurrentTransaction(transactionData);
+       } catch (error) {
+         console.error('Error processing transaction:', error instanceof Error ? error.message : error);
+        
+        // Show error toast with specific message
+         toast({
+           title: "Transaksi Gagal",
+           description: error instanceof Error 
+            ? `Error: ${error.message}` 
+            : "Terjadi kesalahan saat memproses transaksi",
+           variant: "destructive"
+         });
+       } finally {
+     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+       <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+         <h3 className="text-lg font-bold mb-4">Struk Pembayaran</h3>
+        
+        {/* Receipt content with proper structure for printing */}
+        <div id="receipt-content" className="bg-gray-100 p-4 rounded-lg mb-4 font-mono text-sm" ref={receiptRef}>
+          <div className="receipt-header">
+            <div className="w-16 h-16 mx-auto mb-2">
+              <img 
+                src="/logo.jpg"
+                alt="Injapan Food Logo" 
+                className="w-full h-full object-contain rounded-full"
+              />
+            </div>
+            <h3 className="font-bold text-lg">INJAPAN FOOD</h3>
+            <p className="text-sm">POS KASIR (JULI 2025)</p>
+            <p className="text-xs mt-2">
+              {new Date().toLocaleDateString('id-ID', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              })}
+            </p>
+            <p className="text-xs">Kasir: {selectedCashier?.name || 'Admin'}</p>
+          </div>
+          
+          <div className="receipt-divider">
+            <div className="receipt-header-row">
+              <span>Produk</span>
+              <div className="flex">
+                <span className="receipt-item-qty">Qty</span>
+                <span className="receipt-item-total">Harga</span>
+              </div>
+            </div>
+          </div>
+          
+          <div className="mb-4">
+            {currentTransaction?.items.map((item, index) => (
+              <div key={index} className="receipt-item">
+                <span className="receipt-item-name">{item.product.name}</span>
+                <div className="receipt-item-details">
+                  <span className="receipt-item-qty">{item.quantity}</span>
+                  <span className="receipt-item-total">¥{item.totalPrice.toLocaleString()}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          <div className="receipt-summary">
+            <div className="receipt-total">
+              <span className="receipt-total-label">Total</span>
+              <span className="receipt-total-value">¥{currentTransaction?.totalAmount.toLocaleString()}</span>
+            </div>
+            
+            {paymentMethod === 'cash' && currentTransaction?.cashReceived && (
+              <>
+                <div className="receipt-payment">
+                  <span className="receipt-payment-label">Tunai</span>
+                  <span className="receipt-payment-value">¥{currentTransaction.cashReceived.toLocaleString()}</span>
+                </div>
+                <div className="receipt-change">
+                  <span className="receipt-change-label">Kembali</span>
+                  <span className="receipt-change-value">¥{currentTransaction.change?.toLocaleString()}</span>
+                </div>
+              </>
+            )}
+            
+            <div className="receipt-method">
+              <span className="receipt-method-label">Metode:</span>
+              <span className="receipt-method-value">{paymentMethod === 'cash' ? 'Tunai' : 'Non-Tunai'}</span>
+            </div>
+          </div>
+          
+          <div className="receipt-footer">
+            <p>Terima kasih!</p>
+            <p className="text-xs mt-1">ID: {transactionId.slice(0, 8)}</p>
+          </div>
+         </div>
+         
+           <Button 
+             onClick={() => {
+               try {
+                 // Use the browser's print functionality
+                window.print();
+               } catch (error) {
+                 console.error('Error printing receipt:', error);
+                 toast({
+           <Button 
+             onClick={() => {
+               try {
+                 // Use the improved PDF generation function
+                import('../../utils/pdfUtils').then(module => {
+                  module.generateReceiptPDF(receiptRef.current, transactionId.slice(0, 8));
+                }).catch(error => {
+                  console.error('Error importing PDF utils:', error);
+                  toast({
+                    title: "Error",
+                    description: "Gagal mengimpor modul PDF. Coba lagi nanti.",
+                    variant: "destructive"
+                  });
+                });
+               } catch (error) {
+                 console.error('Error generating PDF:', error);
+                 toast({
