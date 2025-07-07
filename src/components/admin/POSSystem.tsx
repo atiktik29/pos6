@@ -4,7 +4,7 @@
   const [isReceiptDialogOpen, setIsReceiptDialogOpen] = useState(false); 
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedCashier, setSelectedCashier] = useState<Cashier | null>(null);
-  const receiptRef = useRef<HTMLDivElement>(null);
+  const receiptRef = useRef<HTMLDivElement | null>(null);
 
   // Get transactions for the selected date
   const { transactions, loading: transactionsLoading, error: transactionsError } = usePOSTransactions(selectedDate);
@@ -12,9 +12,10 @@
   // Handle manual refresh of transactions
   const handleRefreshTransactions = () => {
     setIsRefreshing(true);
-    // Force re-render by changing the date slightly and then back
+    // Store current date
     const currentDate = selectedDate;
-    setSelectedDate('refresh-trigger');
+    // Use a valid date format for temporary value
+    setSelectedDate(new Date().toISOString().split('T')[0]);
     setTimeout(() => {
       setSelectedDate(currentDate);
       setIsRefreshing(false);
