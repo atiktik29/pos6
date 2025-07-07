@@ -11,6 +11,7 @@ import {
   CreditCard,
   Percent,
   DollarSign,
+  ShoppingBag,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
