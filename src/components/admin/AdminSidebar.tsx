@@ -71,6 +71,7 @@ const AdminSidebar = () => {
       href: '/admin/financial-reports',
       icon: DollarSign,
       description: 'Financial reports'
+    }
   ];
 
   return (
