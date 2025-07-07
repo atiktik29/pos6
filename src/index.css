@@ -114,12 +114,12 @@
 /* Print styles for POS receipt */
 @media print {
   body * {
-    display: none;
+    display: none !important;
   }
   
   #receipt-content,
   #receipt-content * {
-    display: block;
+    display: block !important;
     visibility: visible !important;
   }
   
@@ -127,13 +127,15 @@
     position: absolute;
     left: 0;
     top: 0;
-    width: 80mm !important; /* Standard thermal receipt width */
-    padding: 5mm !important;
+    width: 80mm !important;
+    max-width: 80mm !important;
+    padding: 5mm 2mm !important;
     font-family: 'Courier New', monospace;
-    font-size: 10px !important;
+    font-size: 9px !important;
     background-color: white;
     color: black;
     margin: 0;
+    box-sizing: border-box !important;
   }
   
   /* Hide UI elements during print */
@@ -146,64 +148,80 @@
   
   /* Receipt specific styles */
   .receipt-header {
-    text-align: center;
-    margin-bottom: 5px !important;
+    text-align: center !important;
+    margin-bottom: 8px !important;
     font-weight: bold !important;
+    width: 100% !important;
+  }
+  
+  .receipt-header h3 {
+    font-size: 14px !important;
+    margin: 0 0 2px 0 !important;
+    padding: 0 !important;
+    text-align: center !important;
+  }
+  
+  .receipt-header p {
+    font-size: 9px !important;
+    margin: 0 0 2px 0 !important;
+    padding: 0 !important;
+    text-align: center !important;
   }
   
   .receipt-divider {
-    border-top: 1px dashed #000;
-    border-bottom: 1px dashed #000;
-    margin: 5px 0 !important;
-    padding: 3px 0 !important;
+    border-top: 1px dashed #000 !important;
+    border-bottom: 1px dashed #000 !important;
+    margin: 4px 0 !important;
+    padding: 2px 0 !important;
     width: 100% !important;
   }
   
   .receipt-header-row {
     display: flex !important;
     justify-content: space-between !important;
-    font-weight: bold;
-    border-bottom: 1px dashed #000;
-    padding-bottom: 3px !important;
-    margin-bottom: 5px !important;
+    font-weight: bold !important;
+    padding-bottom: 2px !important;
+    margin-bottom: 3px !important;
     width: 100% !important;
   }
   
   .receipt-item {
     display: flex !important;
     justify-content: space-between !important;
-    margin-bottom: 3px !important;
-    font-size: 9px !important;
+    margin-bottom: 2px !important;
+    font-size: 8px !important;
     width: 100% !important;
   }
   
   .receipt-item-name {
-    max-width: 120px !important;
+    max-width: 100px !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     text-align: left !important;
+    flex: 1 !important;
   }
   
   .receipt-item-details {
     display: flex !important;
     justify-content: flex-end !important;
+    width: 70px !important;
   }
   
   .receipt-item-qty {
-    width: 20px !important;
+    width: 15px !important;
     text-align: center !important;
   }
   
   .receipt-item-price, .receipt-item-total {
-    width: 50px !important;
+    width: 45px !important;
     text-align: right !important;
   }
   
   .receipt-summary {
-    border-top: 1px dashed #000;
-    padding-top: 5px !important;
-    margin-bottom: 5px !important;
+    border-top: 1px dashed #000 !important;
+    padding-top: 3px !important;
+    margin-bottom: 3px !important;
     width: 100% !important;
   }
   
@@ -213,8 +231,8 @@
   .receipt-method {
     display: flex !important;
     justify-content: space-between !important;
-    width: 100% !important;
     margin-bottom: 2px !important;
+    width: 100% !important;
   }
   
   .receipt-total-label,
@@ -235,10 +253,15 @@
   
   .receipt-footer {
     text-align: center;
-    margin-top: 10px !important;
-    font-size: 9px !important;
+    margin-top: 8px !important;
+    font-size: 8px !important;
     width: 100% !important;
-    border-top: 1px dashed #000;
-    padding-top: 5px !important;
+    border-top: 1px dashed #000 !important;
+    padding-top: 3px !important;
+  }
+  
+  .receipt-footer p {
+    margin: 0 0 2px 0 !important;
+    padding: 0 !important;
   }
 }

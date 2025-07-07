@@ -25,7 +25,7 @@ export const generateReceiptPDF = async (element: HTMLElement | null, transactio
     let canvas;
     try {
       canvas = await html2canvas(element, {
-        scale: 3, // Higher resolution for better quality
+        scale: 4, // Higher resolution for better quality
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#ffffff',
@@ -43,18 +43,25 @@ export const generateReceiptPDF = async (element: HTMLElement | null, transactio
 
     const imgData = canvas.toDataURL('image/png');
     
-    // Create PDF with thermal receipt dimensions (80mm width)
+    // Create PDF with thermal receipt dimensions (80mm width, auto height)
     try {
+      // Calculate dimensions
+      const pdfWidth = 80; // 80mm width (standard receipt)
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
-        format: [80, 297] // 80mm width (standard receipt), A4 height
+        format: [pdfWidth, Math.min(pdfHeight + 10, 297)] // Limit height to A4 max
       });
       
-      const imgWidth = 70; // Slightly less than 80mm to account for margins
+      // Add image with proper dimensions and centered
+      const imgWidth = pdfWidth - 10; // 5mm margins on each side
       const imgHeight = canvas.height * imgWidth / canvas.width;
+      const xPos = 5; // 5mm from left edge
+      const yPos = 5; // 5mm from top edge
       
-      pdf.addImage(imgData, 'PNG', 5, 5, imgWidth, imgHeight);
+      pdf.addImage(imgData, 'PNG', xPos, yPos, imgWidth, imgHeight);
       pdf.save(`receipt-${transactionId}.pdf`);
     } catch (pdfError) {
       console.error('Error creating or saving PDF:', pdfError);
