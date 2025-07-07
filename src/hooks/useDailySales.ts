@@ -7,17 +7,11 @@ import { DailySales } from '@/services/dailySalesService';
  */
 export const useDailySales = (date: string) => {
   const [sales, setSales] = useState<DailySales | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null); 
-  const [lastFetchTime, setLastFetchTime] = useState<number>(0);
 
-  useEffect(() => {
-    // POS feature removed
-    setLoading(false);
-    setSales(null);
-  }, [date, lastFetchTime]);
-
-  return { sales, loading, error };
+  // POS feature removed
+  return { sales: null, loading: false, error: null };
 };
 
 /**
@@ -27,17 +21,11 @@ export const useDailySales = (date: string) => {
  */
 export const useMonthlySales = (year: number, month: number) => {
   const [sales, setSales] = useState<DailySales[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null); 
-  const [lastFetchTime, setLastFetchTime] = useState<number>(0);
 
-  useEffect(() => {
-    // POS feature removed
-    setLoading(false);
-    setSales([]);
-  }, [year, month, lastFetchTime]);
-
-  return { sales, loading, error };
+  // POS feature removed
+  return { sales: [], loading: false, error: null };
 };
 
 /**
@@ -46,14 +34,9 @@ export const useMonthlySales = (year: number, month: number) => {
  */
 export const useRecentDailySales = (limit: number = 7) => {
   const [sales, setSales] = useState<DailySales[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  useEffect(() => {
-    // POS feature removed
-    setLoading(false);
-    setSales([]);
-  }, [limit]);
-
-  return { sales, loading, error };
+  // POS feature removed
+  return { sales: [], loading: false, error: null };
 };

@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, Sector } from 'recharts';
-import { DollarSign, TrendingUp, Download, Calendar, ArrowDown, ArrowUp, FileText, Plus, Truck, CreditCard, Filter, RefreshCw, PieChartIcon } from 'lucide-react';
+import { DollarSign, TrendingUp, Download, Calendar, ArrowDown, ArrowUp, FileText, Plus, Truck, CreditCard, Filter, RefreshCw } from 'lucide-react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { useOrders } from '@/hooks/useOrders';
 import { Order } from '@/types';
@@ -150,7 +150,7 @@ const FinancialReports = () => {
       
       // Calculate monthly summary
       const orderRevenue = monthOrders.reduce((sum, order) => sum + order.total_price, 0);
-      const revenue = orderRevenue;
+      const revenue = orderRevenue; // Only order revenue now that POS is removed
       const shippingCost = monthOrders.reduce((sum, order) => sum + (order.shipping_fee || 0), 0);
       const expenses = shippingCost; // For now, only shipping costs are considered as expenses
       const profit = revenue - expenses;
@@ -284,7 +284,7 @@ const FinancialReports = () => {
         
         // Calculate revenue and expenses including POS transactions
         const orderRevenue = monthOrders.reduce((sum, order) => sum + order.total_price, 0);
-        const revenue = orderRevenue;
+        const revenue = orderRevenue; // Only order revenue now that POS is removed
         const expenses = monthOrders.reduce((sum, order) => sum + (order.shipping_fee || 0), 0);
         
         monthlyChartData.push({
