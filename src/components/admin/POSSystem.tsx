@@ -120,49 +120,61 @@ Here's the fixed script with all missing closing brackets and required whitespac
             </div>
             
             <div className="receipt-divider my-2 border-t border-b border-dashed border-gray-400 py-1">
-              <div className="receipt-header-row flex justify-between">
-                <span className="w-1/2 font-bold">Produk</span>
-                <div className="w-1/2 flex justify-between">
-                  <span className="w-10 text-center font-bold">Qty</span>
-                  <span className="w-20 text-right font-bold">Harga</span>
+              <div className="receipt-header-row">
+                <div className="flex justify-between w-full">
+                  <span className="w-1/2 font-bold">Produk</span>
+                  <div className="w-1/2 flex justify-between">
+                    <span className="w-10 text-center font-bold">Qty</span>
+                    <span className="w-20 text-right font-bold">Harga</span>
+                  </div>
                 </div>
               </div>
             </div>
             
             <div className="mb-4">
               {currentTransaction?.items.map((item, index) => (
-                <div key={index} className="receipt-item flex justify-between mb-1">
-                  <span className="w-1/2 truncate">{item.product.name}</span>
-                  <div className="w-1/2 flex justify-between">
-                    <span className="w-10 text-center">{item.quantity}</span>
-                    <span className="w-20 text-right">¥{item.totalPrice.toLocaleString()}</span>
+                <div key={index} className="receipt-item mb-1">
+                  <div className="flex justify-between w-full">
+                    <span className="w-1/2 truncate">{item.product.name}</span>
+                    <div className="w-1/2 flex justify-between">
+                      <span className="w-10 text-center">{item.quantity}</span>
+                      <span className="w-20 text-right">¥{item.totalPrice.toLocaleString()}</span>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
             
             <div className="receipt-summary border-t border-dashed border-gray-400 pt-2 mb-2">
-              <div className="receipt-total flex justify-between font-bold">
-                <span>Total</span>
-                <span>¥{currentTransaction?.totalAmount.toLocaleString()}</span>
+              <div className="receipt-total">
+                <div className="flex justify-between font-bold">
+                  <span className="receipt-total-label">Total</span>
+                  <span className="receipt-total-value">¥{currentTransaction?.totalAmount.toLocaleString()}</span>
+                </div>
               </div>
               
               {paymentMethod === 'cash' && currentTransaction?.cashReceived && (
                 <>
-                  <div className="receipt-payment flex justify-between">
-                    <span>Tunai</span>
-                    <span>¥{currentTransaction.cashReceived.toLocaleString()}</span>
+                  <div className="receipt-payment">
+                    <div className="flex justify-between">
+                      <span className="receipt-payment-label">Tunai</span>
+                      <span className="receipt-payment-value">¥{currentTransaction.cashReceived.toLocaleString()}</span>
+                    </div>
                   </div>
-                  <div className="receipt-change flex justify-between">
-                    <span>Kembali</span>
-                    <span>¥{currentTransaction.change?.toLocaleString()}</span>
+                  <div className="receipt-change">
+                    <div className="flex justify-between">
+                      <span className="receipt-change-label">Kembali</span>
+                      <span className="receipt-change-value">¥{currentTransaction.change?.toLocaleString()}</span>
+                    </div>
                   </div>
                 </>
               )}
               
-              <div className="receipt-method flex justify-between">
-                <span>Metode:</span>
-                <span>{paymentMethod === 'cash' ? 'Tunai' : 'Non-Tunai'}</span>
+              <div className="receipt-method">
+                <div className="flex justify-between">
+                  <span className="receipt-method-label">Metode:</span>
+                  <span className="receipt-method-value">{paymentMethod === 'cash' ? 'Tunai' : 'Non-Tunai'}</span>
+                </div>
               </div>
             </div>
             
@@ -175,8 +187,96 @@ Here's the fixed script with all missing closing brackets and required whitespac
            <Button 
              onClick={() => {
                try {
-                 // Use the browser's print functionality
-                window.print();
+                // Use the browser's print functionality
+                const printWindow = window.open('', '_blank');
+                if (!printWindow) {
+                  throw new Error('Could not open print window');
+                }
+                
+                // Create a clean document with only the receipt content
+                printWindow.document.write(`
+                  <!DOCTYPE html>
+                  <html>
+                    <head>
+                      <title>Receipt ${transactionId?.slice(0, 8) || ''}</title>
+                      <style>
+                        body {
+                          font-family: 'Courier New', monospace;
+                          margin: 0;
+                          padding: 10mm 5mm;
+                          width: 80mm;
+                          background: white;
+                        }
+                        .receipt-header {
+                          text-align: center;
+                          margin-bottom: 10px;
+                        }
+                        .receipt-header h3 {
+                          font-size: 14px;
+                          margin: 0 0 2px 0;
+                        }
+                        .receipt-header p {
+                          font-size: 9px;
+                          margin: 0 0 2px 0;
+                        }
+                        .receipt-divider {
+                          border-top: 1px dashed #000;
+                          border-bottom: 1px dashed #000;
+                          margin: 4px 0;
+                          padding: 2px 0;
+                        }
+                        .receipt-header-row {
+                          display: flex;
+                          justify-content: space-between;
+                          font-weight: bold;
+                          width: 100%;
+                        }
+                        .receipt-item {
+                          display: flex;
+                          justify-content: space-between;
+                          margin-bottom: 2px;
+                          font-size: 8px;
+                          width: 100%;
+                        }
+                        .receipt-summary {
+                          border-top: 1px dashed #000;
+                          padding-top: 3px;
+                          margin-bottom: 3px;
+                        }
+                        .receipt-total, 
+                        .receipt-payment, 
+                        .receipt-change, 
+                        .receipt-method {
+                          display: flex;
+                          justify-content: space-between;
+                          margin-bottom: 2px;
+                        }
+                        .receipt-footer {
+                          text-align: center;
+                          margin-top: 8px;
+                          font-size: 8px;
+                          border-top: 1px dashed #000;
+                          padding-top: 3px;
+                        }
+                        .receipt-footer p {
+                          margin: 0 0 2px 0;
+                        }
+                      </style>
+                    </head>
+                    <body>
+                      ${receiptRef.current?.innerHTML || ''}
+                    </body>
+                  </html>
+                `);
+                
+                printWindow.document.close();
+                printWindow.focus();
+                
+                // Print after a short delay to ensure content is loaded
+                setTimeout(() => {
+                  printWindow.print();
+                  printWindow.close();
+                }, 250);
                } catch (error) {
                  console.error('Error printing receipt:', error);
                  toast({
@@ -191,16 +291,8 @@ Here's the fixed script with all missing closing brackets and required whitespac
              onClick={() => {
                try {
                  // Use the improved PDF generation function
-                import('@/utils/pdfUtils').then(module => {
-                  module.generateReceiptPDF(receiptRef.current, transactionId?.slice(0, 8) || 'receipt');
-                }).catch(error => {
-                  console.error('Error importing PDF utils:', error);
-                  toast({
-                    title: "Error",
-                    description: "Gagal mengimpor modul PDF. Coba lagi nanti.",
-                    variant: "destructive"
-                  });
-                });
+                const { generateReceiptPDF } = require('@/utils/pdfUtils');
+                generateReceiptPDF(receiptRef.current, transactionId?.slice(0, 8) || 'receipt');
                } catch (error) {
                  console.error('Error generating PDF:', error);
                  toast({

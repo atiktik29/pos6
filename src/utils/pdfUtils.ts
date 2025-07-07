@@ -80,6 +80,158 @@ export const generateReceiptPDF = async (element: HTMLElement | null, transactio
   }
 };
 
+/**
+ * Generate a PDF receipt for POS transactions
+ * @param element The HTML element containing the receipt
+ * @param transactionId Transaction ID for the filename
+ */
+export const generateReceiptPDF = async (element: HTMLElement | null, transactionId: string) => {
+  if (!element) {
+    console.error('Receipt element not found for PDF generation');
+    return;
+  }
+
+  try {
+    // Import html2canvas and jsPDF dynamically with error handling
+    let html2canvas, jsPDF;
+    try {
+      html2canvas = (await import('html2canvas')).default;
+      jsPDF = (await import('jspdf')).default;
+    } catch (importError) {
+      console.error('Error importing PDF libraries:', importError);
+      alert('Failed to load PDF generation libraries. Please try again later.');
+      return;
+    }
+
+    // Create a clean clone of the element to avoid styling issues
+    const clonedElement = element.cloneNode(true) as HTMLElement;
+    const tempContainer = document.createElement('div');
+    tempContainer.style.position = 'absolute';
+    tempContainer.style.left = '-9999px';
+    tempContainer.style.width = '80mm'; // Standard thermal receipt width
+    tempContainer.appendChild(clonedElement);
+    document.body.appendChild(tempContainer);
+
+    // Apply specific styles to ensure proper formatting
+    const styleElement = document.createElement('style');
+    styleElement.textContent = `
+      #receipt-content {
+        width: 80mm !important;
+        padding: 5mm !important;
+        font-family: 'Courier New', monospace !important;
+        font-size: 9px !important;
+        background-color: white !important;
+        color: black !important;
+        box-sizing: border-box !important;
+      }
+      .receipt-header {
+        text-align: center !important;
+        margin-bottom: 8px !important;
+      }
+      .receipt-header h3 {
+        font-size: 14px !important;
+        margin: 0 0 2px 0 !important;
+        padding: 0 !important;
+        font-weight: bold !important;
+      }
+      .receipt-header p {
+        font-size: 9px !important;
+        margin: 0 0 2px 0 !important;
+        padding: 0 !important;
+      }
+      .receipt-divider {
+        border-top: 1px dashed #000 !important;
+        border-bottom: 1px dashed #000 !important;
+        margin: 4px 0 !important;
+        padding: 2px 0 !important;
+        width: 100% !important;
+      }
+      .receipt-header-row {
+        display: flex !important;
+        justify-content: space-between !important;
+        font-weight: bold !important;
+        width: 100% !important;
+      }
+      .receipt-item {
+        display: flex !important;
+        justify-content: space-between !important;
+        margin-bottom: 2px !important;
+        font-size: 8px !important;
+        width: 100% !important;
+      }
+      .receipt-summary {
+        border-top: 1px dashed #000 !important;
+        padding-top: 3px !important;
+        margin-bottom: 3px !important;
+        width: 100% !important;
+      }
+      .receipt-total, 
+      .receipt-payment, 
+      .receipt-change, 
+      .receipt-method {
+        display: flex !important;
+        justify-content: space-between !important;
+        margin-bottom: 2px !important;
+        width: 100% !important;
+      }
+      .receipt-footer {
+        text-align: center !important;
+        margin-top: 8px !important;
+        font-size: 8px !important;
+        border-top: 1px dashed #000 !important;
+        padding-top: 3px !important;
+        width: 100% !important;
+      }
+      .receipt-footer p {
+        margin: 0 0 2px 0 !important;
+        padding: 0 !important;
+      }
+    `;
+    tempContainer.appendChild(styleElement);
+
+    // Configure html2canvas options for better quality
+    try {
+      const canvas = await html2canvas(clonedElement, {
+        scale: 3, // Higher resolution
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        logging: false
+      });
+
+      // Clean up the temporary container
+      document.body.removeChild(tempContainer);
+
+      const imgData = canvas.toDataURL('image/png');
+      
+      // Create PDF with thermal receipt dimensions (80mm width, auto height)
+      const pdfWidth = 80; // 80mm width (standard receipt)
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      
+      const pdf = new jsPDF({
+        orientation: pdfHeight > pdfWidth ? 'portrait' : 'landscape',
+        unit: 'mm',
+        format: [pdfWidth, Math.min(pdfHeight + 10, 297)] // Limit height to A4 max
+      });
+      
+      // Add image with proper dimensions and centered
+      pdf.addImage(imgData, 'PNG', 0, 5, pdfWidth, pdfHeight);
+      pdf.save(`receipt-${transactionId}.pdf`);
+    } catch (error) {
+      console.error('Error generating receipt PDF:', error);
+      alert('Failed to generate PDF. Please try again.');
+      
+      // Clean up if error occurs
+      if (document.body.contains(tempContainer)) {
+        document.body.removeChild(tempContainer);
+      }
+    }
+  } catch (error) {
+    console.error('Error in receipt PDF generation:', error);
+    alert('An unexpected error occurred. Please try again later.');
+  }
+};
+
 export const generateInvoicePDF = async (element: HTMLElement | null, invoiceNumber: string) => {
   if (!element) {
     console.error('Element not found for PDF generation');
