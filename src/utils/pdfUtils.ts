@@ -21,296 +21,65 @@ export const generateReceiptPDF = async (element: HTMLElement | null, transactio
       return;
     }
 
-    // Create a clean container with proper receipt styling
-    const tempContainer = document.createElement('div');
-    tempContainer.style.position = 'absolute';
-    tempContainer.style.left = '-9999px';
-    tempContainer.style.width = '80mm';
-    tempContainer.style.padding = '5mm';
-    tempContainer.style.backgroundColor = 'white';
-    document.body.appendChild(tempContainer);
-    
-    // Extract data from the original receipt element
-    const receiptData = extractReceiptData(element);
-    
-    // Create a clean receipt with consistent formatting
-    tempContainer.innerHTML = createCleanReceiptHTML(receiptData);
-
-    // Apply specific styles to ensure proper formatting
-    const styleElement = document.createElement('style');
-    styleElement.textContent = `
-      .receipt-container {
-        width: 80mm;
-        font-family: 'Courier New', monospace;
-        font-size: 9px;
-        line-height: 1.2;
-        color: black;
-        background: white;
-        padding: 5mm;
-        box-sizing: border-box;
-      }
-      .receipt-title {
-        font-size: 14px;
-        font-weight: bold;
-        text-align: center;
-        margin: 0 0 2px 0;
-      }
-      .receipt-subtitle {
-        font-size: 9px;
-        text-align: center;
-        margin: 0 0 2px 0;
-      }
-      .receipt-info {
-        font-size: 9px;
-        text-align: center;
-        margin: 0 0 2px 0;
-      }
-      .receipt-divider {
-        border-top: 1px dashed #000;
-        margin: 4px 0;
-        width: 100%;
-      }
-      .receipt-table-header {
-        display: flex;
-        justify-content: space-between;
-        font-weight: bold;
-        margin-bottom: 4px;
-      }
-      .receipt-product {
-        flex: 1;
-        text-align: left;
-        padding-right: 5px;
-      }
-      .receipt-qty {
-        width: 20px;
-        text-align: center;
-      }
-      .receipt-price {
-        width: 40px;
-        text-align: right;
-        padding-left: 5px;
-      }
-      .receipt-subtotal {
-        width: 40px;
-        text-align: right;
-        padding-left: 5px;
-      }
-      .receipt-item-row {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 2px;
-      }
-      .receipt-summary {
-        margin-top: 4px;
-      }
-      .receipt-summary-row {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 2px;
-      }
-      .receipt-footer {
-        text-align: center;
-        margin-top: 8px;
-        font-size: 8px;
-      }
-    `;
-    tempContainer.appendChild(styleElement);
-
-    // Configure html2canvas options for better quality
+    // Configure html2canvas options for better quality with error handling
+    let canvas;
     try {
-      const canvas = await html2canvas(tempContainer.firstChild as HTMLElement, {
-        scale: 3, // Higher resolution
+      canvas = await html2canvas(element, {
+        scale: 4, // Higher resolution for better quality
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#ffffff',
-        logging: false
+        logging: false,
+        width: element.scrollWidth,
+        height: element.scrollHeight,
+        scrollX: 0,
+        scrollY: 0
       });
+    } catch (canvasError) {
+      console.error('Error creating canvas:', canvasError);
+      alert('Failed to generate PDF. Please try again.');
+      return;
+    }
 
-      // Clean up the temporary container
-      document.body.removeChild(tempContainer);
-
-      const imgData = canvas.toDataURL('image/png');
-      
-      // Create PDF with thermal receipt dimensions (80mm width, auto height)
+    const imgData = canvas.toDataURL('image/png');
+    
+    // Create PDF with thermal receipt dimensions (80mm width, auto height)
+    try {
+      // Calculate dimensions
       const pdfWidth = 80; // 80mm width (standard receipt)
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
       
       const pdf = new jsPDF({
-        orientation: pdfHeight > pdfWidth ? 'portrait' : 'landscape',
+        orientation: 'portrait',
         unit: 'mm',
         format: [pdfWidth, Math.min(pdfHeight + 10, 297)] // Limit height to A4 max
       });
       
       // Add image with proper dimensions and centered
-      pdf.addImage(imgData, 'PNG', 0, 5, pdfWidth, pdfHeight);
-      pdf.save(`receipt-${transactionId}.pdf`);
-    } catch (error) {
-      console.error('Error generating receipt PDF:', error);
-      alert('Failed to generate PDF. Please try again.');
+      const imgWidth = pdfWidth - 10; // 5mm margins on each side
+      const imgHeight = canvas.height * imgWidth / canvas.width;
+      const xPos = 5; // 5mm from left edge
+      const yPos = 5; // 5mm from top edge
       
-      // Clean up if error occurs
-      if (document.body.contains(tempContainer)) {
-        document.body.removeChild(tempContainer);
-      }
+      pdf.addImage(imgData, 'PNG', xPos, yPos, imgWidth, imgHeight);
+      pdf.save(`receipt-${transactionId}.pdf`);
+    } catch (pdfError) {
+      console.error('Error creating or saving PDF:', pdfError);
+      alert('Failed to generate PDF. Please try again.');
     }
   } catch (error) {
-    console.error('Error in receipt PDF generation:', error);
-    alert('An unexpected error occurred. Please try again later.');
+    console.error('Error generating receipt PDF:', error);
+    
+    // Fallback: open print dialog
+    try {
+      window.print();
+    } catch (printError) {
+      console.error('Print fallback also failed:', printError);
+      alert('Failed to generate PDF and print fallback also failed. Please try again later.');
+    }
   }
 };
 
-/**
- * Extract receipt data from the receipt element
- */
-function extractReceiptData(element: HTMLElement): any {
-  try {
-    // Extract header information
-    const headerElement = element.querySelector('.receipt-header');
-    const title = headerElement?.querySelector('h3')?.textContent || 'INJAPAN FOOD';
-    const subtitle = headerElement?.querySelector('p:nth-of-type(1)')?.textContent || 'POS KASIR';
-    
-    // Extract date and cashier info
-    const dateInfo = headerElement?.querySelector('p:nth-of-type(2)')?.textContent || '';
-    const cashierInfo = headerElement?.querySelector('p:nth-of-type(3)')?.textContent || '';
-    
-    // Extract items
-    const items: Array<{name: string, qty: string, price: string}> = [];
-    const itemElements = element.querySelectorAll('.receipt-item');
-    itemElements.forEach(item => {
-      const nameElement = item.querySelector('.receipt-item-name') || 
-                          item.querySelector('.w-1/2.truncate');
-      const qtyElement = item.querySelector('.receipt-item-qty') || 
-                         item.querySelector('.w-10.text-center');
-      const priceElement = item.querySelector('.receipt-item-total') || 
-                           item.querySelector('.w-20.text-right');
-      
-      if (nameElement && qtyElement && priceElement) {
-        items.push({
-          name: nameElement.textContent || '',
-          qty: qtyElement.textContent || '',
-          price: priceElement.textContent || ''
-        });
-      }
-    });
-    
-    // Extract summary information
-    const totalElement = element.querySelector('.receipt-total');
-    const total = totalElement?.querySelector('.receipt-total-value')?.textContent || 
-                  totalElement?.querySelector('span:last-child')?.textContent || '';
-    
-    const paymentElement = element.querySelector('.receipt-payment');
-    const payment = paymentElement?.querySelector('.receipt-payment-value')?.textContent || 
-                    paymentElement?.querySelector('span:last-child')?.textContent || '';
-    
-    const changeElement = element.querySelector('.receipt-change');
-    const change = changeElement?.querySelector('.receipt-change-value')?.textContent || 
-                   changeElement?.querySelector('span:last-child')?.textContent || '';
-    
-    const methodElement = element.querySelector('.receipt-method');
-    const method = methodElement?.querySelector('.receipt-method-value')?.textContent || 
-                   methodElement?.querySelector('span:last-child')?.textContent || '';
-    
-    // Extract footer information
-    const footerElement = element.querySelector('.receipt-footer');
-    const thankYouMessage = footerElement?.querySelector('p:first-child')?.textContent || 'Terima kasih!';
-    const transactionId = footerElement?.querySelector('p:last-child')?.textContent || '';
-    
-    return {
-      title,
-      subtitle,
-      dateInfo,
-      cashierInfo,
-      items,
-      total,
-      payment,
-      change,
-      method,
-      thankYouMessage,
-      transactionId
-    };
-  } catch (error) {
-    console.error('Error extracting receipt data:', error);
-    return {
-      title: 'INJAPAN FOOD',
-      subtitle: 'POS KASIR',
-      dateInfo: new Date().toLocaleDateString(),
-      cashierInfo: 'Kasir: Admin',
-      items: [],
-      total: '¥0',
-      payment: '',
-      change: '',
-      method: '',
-      thankYouMessage: 'Terima kasih!',
-      transactionId: ''
-    };
-  }
-}
-
-/**
- * Create clean receipt HTML with consistent formatting
- */
-function createCleanReceiptHTML(data: any): string {
-  return `
-    <div class="receipt-container">
-      <div class="receipt-title">${data.title}</div>
-      <div class="receipt-subtitle">${data.subtitle}</div>
-      <div class="receipt-info">${data.dateInfo}</div>
-      <div class="receipt-info">${data.cashierInfo}</div>
-      
-      <div class="receipt-divider"></div>
-      
-      <div class="receipt-table-header">
-        <div class="receipt-product">Produk</div>
-        <div class="receipt-qty">Qty</div>
-        <div class="receipt-price">Harga</div>
-        <div class="receipt-subtotal">Subtotal</div>
-      </div>
-      
-      <div class="receipt-divider"></div>
-      
-      ${data.items.map(item => `
-        <div class="receipt-item-row">
-          <div class="receipt-product">${item.name}</div>
-          <div class="receipt-qty">${item.qty}</div>
-          <div class="receipt-price">${item.price}</div>
-          <div class="receipt-subtotal">${item.price}</div>
-        </div>
-      `).join('')}
-      
-      <div class="receipt-divider"></div>
-      
-      <div class="receipt-summary">
-        <div class="receipt-summary-row">
-          <div>Total</div>
-          <div>${data.total}</div>
-        </div>
-        ${data.payment ? `
-        <div class="receipt-summary-row">
-          <div>Tunai</div>
-          <div>${data.payment}</div>
-        </div>
-        ` : ''}
-        ${data.change ? `
-        <div class="receipt-summary-row">
-          <div>Kembali</div>
-          <div>${data.change}</div>
-        </div>
-        ` : ''}
-        <div class="receipt-summary-row">
-          <div>Metode:</div>
-          <div>${data.method}</div>
-        </div>
-      </div>
-      
-      <div class="receipt-divider"></div>
-      
-      <div class="receipt-footer">
-        <div>${data.thankYouMessage}</div>
-        <div>${data.transactionId}</div>
-      </div>
-    </div>
-  `;
-}
 export const generateInvoicePDF = async (element: HTMLElement | null, invoiceNumber: string) => {
   if (!element) {
     console.error('Element not found for PDF generation');

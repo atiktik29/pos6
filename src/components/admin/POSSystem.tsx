@@ -105,162 +105,78 @@ Here's the fixed script with all missing closing brackets and required whitespac
           {/* Receipt content with proper structure for printing */}
           <div id="receipt-content" className="bg-white p-4 rounded-lg mb-4 font-mono text-sm" ref={receiptRef}>
             <div className="receipt-header">
-              <h3 className="font-bold text-lg text-center mb-1">INJAPAN FOOD</h3>
-              <p className="text-sm text-center mb-1">POS KASIR (JULI 2025)</p>
-              <p className="text-xs text-center mb-1">
-                {new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })} • 
-                {new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} • 
-                Kasir: {selectedCashier?.name || 'Admin'}
+              <h3 className="font-bold text-lg text-center">INJAPAN FOOD</h3>
+              <p className="text-sm text-center">POS KASIR (JULI 2025)</p>
+              <p className="text-xs text-center mt-2">
+                {new Date().toLocaleDateString('id-ID', { 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
               </p>
+              <p className="text-xs text-center">Kasir: {selectedCashier?.name || 'Admin'}</p>
             </div>
             
-            <div className="receipt-divider border-t border-b border-dashed border-gray-400 my-2"></div>
+            <div className="receipt-divider my-2 border-t border-b border-dashed border-gray-400 py-1">
+              <div className="receipt-header-row flex justify-between">
+                <span className="w-1/2 font-bold">Produk</span>
+                <div className="w-1/2 flex justify-between">
+                  <span className="w-10 text-center font-bold">Qty</span>
+                  <span className="w-20 text-right font-bold">Harga</span>
+                </div>
+              </div>
+            </div>
             
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="border-b border-dashed border-gray-300">
-                  <th className="text-left py-1 font-bold">Produk</th>
-                  <th className="text-center py-1 font-bold">Qty</th>
-                  <th className="text-right py-1 font-bold">Harga</th>
-                  <th className="text-right py-1 font-bold">Subtotal</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentTransaction?.items.map((item, index) => (
-                  <tr key={index} className="border-b border-dotted border-gray-200">
-                    <td className="py-1 pr-2">{item.product.name}</td>
-                    <td className="py-1 text-center">{item.quantity}</td>
-                    <td className="py-1 text-right pl-2">¥{item.price.toLocaleString()}</td>
-                    <td className="py-1 text-right pl-2">¥{item.totalPrice.toLocaleString()}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="mb-4">
+              {currentTransaction?.items.map((item, index) => (
+                <div key={index} className="receipt-item flex justify-between mb-1">
+                  <span className="w-1/2 truncate">{item.product.name}</span>
+                  <div className="w-1/2 flex justify-between">
+                    <span className="w-10 text-center">{item.quantity}</span>
+                    <span className="w-20 text-right">¥{item.totalPrice.toLocaleString()}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
             
-            <div className="receipt-divider border-t border-dashed border-gray-400 my-2"></div>
-            
-            <div className="receipt-summary">
-              <table className="w-full text-xs">
-                <tbody>
-                  <tr>
-                    <td className="py-1 font-bold">Total</td>
-                    <td className="py-1 text-right font-bold">¥{currentTransaction?.totalAmount.toLocaleString()}</td>
-                  </tr>
-                  
+            <div className="receipt-summary border-t border-dashed border-gray-400 pt-2 mb-2">
+              <div className="receipt-total flex justify-between font-bold">
+                <span>Total</span>
+                <span>¥{currentTransaction?.totalAmount.toLocaleString()}</span>
+              </div>
+              
               {paymentMethod === 'cash' && currentTransaction?.cashReceived && (
-                  <>
-                    <tr>
-                      <td className="py-1">Tunai</td>
-                      <td className="py-1 text-right">¥{currentTransaction.cashReceived.toLocaleString()}</td>
-                    </tr>
-                    <tr>
-                      <td className="py-1">Kembali</td>
-                      <td className="py-1 text-right">¥{currentTransaction.change?.toLocaleString()}</td>
-                    </tr>
-                  </>
+                <>
+                  <div className="receipt-payment flex justify-between">
+                    <span>Tunai</span>
+                    <span>¥{currentTransaction.cashReceived.toLocaleString()}</span>
+                  </div>
+                  <div className="receipt-change flex justify-between">
+                    <span>Kembali</span>
+                    <span>¥{currentTransaction.change?.toLocaleString()}</span>
+                  </div>
+                </>
               )}
-                  <tr>
-                    <td className="py-1">Metode:</td>
-                    <td className="py-1 text-right">{paymentMethod === 'cash' ? 'cash' : 'non-cash'}</td>
-                  </tr>
-                </tbody>
-              </table>
+              
+              <div className="receipt-method flex justify-between">
+                <span>Metode:</span>
+                <span>{paymentMethod === 'cash' ? 'Tunai' : 'Non-Tunai'}</span>
+              </div>
             </div>
             
-            <div className="receipt-divider border-t border-dashed border-gray-400 my-2"></div>
-            
-            <div className="receipt-footer text-center">
-              <p className="mb-1">Terima kasih!</p>
-              <p className="text-xs">ID: {transactionId?.slice(0, 8) || '--------'}</p>
+            <div className="receipt-footer text-center border-t border-dashed border-gray-400 pt-2">
+              <p>Terima kasih!</p>
+              <p className="text-xs mt-1">ID: {transactionId?.slice(0, 8) || '--------'}</p>
             </div>
           </div>
          
            <Button 
              onClick={() => {
                try {
-                // Use the browser's print functionality
-                const printWindow = window.open('', '_blank');
-                if (!printWindow) {
-                  throw new Error('Could not open print window');
-                }
-                
-                // Create a clean document with only the receipt content
-                printWindow.document.write(`
-                  <!DOCTYPE html>
-                  <html>
-                    <head>
-                      <title>Struk INJAPAN FOOD</title>
-                      <style>
-                        body {
-                          font-family: 'Courier New', monospace;
-                          margin: 0;
-                          padding: 0;
-                          width: 80mm;
-                          background: white;
-                        }
-                        table {
-                          width: 100%;
-                          border-collapse: collapse;
-                          font-size: 9px;
-                        }
-                        th, td {
-                          padding: 2px 0;
-                        }
-                        th {
-                          text-align: left;
-                          font-weight: bold;
-                        }
-                        .text-center {
-                          text-align: center;
-                        }
-                        .text-right {
-                          text-align: right;
-                        }
-                        .receipt-header {
-                          text-align: center;
-                          margin-bottom: 10px;
-                        }
-                        .receipt-header h3 {
-                          font-size: 14px;
-                          margin: 0 0 4px 0;
-                          font-weight: bold;
-                        }
-                        .receipt-header p {
-                          font-size: 9px;
-                          margin: 0 0 2px 0;
-                        }
-                        .receipt-divider {
-                          border-top: 1px dashed #000;
-                          margin: 8px 0;
-                        }
-                        .receipt-footer {
-                          text-align: center;
-                          margin-top: 8px;
-                          font-size: 8px;
-                          padding: 4px 0;
-                        }
-                        .receipt-footer p {
-                          margin: 0 0 2px 0;
-                        }
-                        #receipt-content {
-                          padding: 5mm;
-                        }
-                      </style>
-                    </head>
-                    <body>
-                      ${receiptRef.current?.innerHTML || ''}
-                    </body>
-                  </html>
-                `);
-                
-                printWindow.document.close();
-                printWindow.focus();
-                
-                // Print after a short delay to ensure content is loaded
-                setTimeout(() => {
-                  printWindow.print();
-                  printWindow.close();
-                }, 250);
+                 // Use the browser's print functionality
+                window.print();
                } catch (error) {
                  console.error('Error printing receipt:', error);
                  toast({
@@ -275,8 +191,16 @@ Here's the fixed script with all missing closing brackets and required whitespac
              onClick={() => {
                try {
                  // Use the improved PDF generation function
-                const { generateReceiptPDF } = require('@/utils/pdfUtils');
-                generateReceiptPDF(receiptRef.current, transactionId?.slice(0, 8) || 'receipt');
+                import('@/utils/pdfUtils').then(module => {
+                  module.generateReceiptPDF(receiptRef.current, transactionId?.slice(0, 8) || 'receipt');
+                }).catch(error => {
+                  console.error('Error importing PDF utils:', error);
+                  toast({
+                    title: "Error",
+                    description: "Gagal mengimpor modul PDF. Coba lagi nanti.",
+                    variant: "destructive"
+                  });
+                });
                } catch (error) {
                  console.error('Error generating PDF:', error);
                  toast({
