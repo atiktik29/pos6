@@ -12,6 +12,9 @@ import {
   Percent,
   DollarSign,
   ShoppingBag,
+  Upload,
+  Trash2
+  ShoppingBag,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -71,6 +74,16 @@ const AdminSidebar = () => {
       href: '/admin/financial-reports',
       icon: DollarSign,
       description: 'Financial reports'
+    },
+    {
+      title: 'Import/Export',
+      href: '/admin/import-export',
+      icon: Upload,
+    },
+    {
+      title: 'Recycle Bin',
+      href: '/admin/recycle-bin',
+      icon: Trash2,
     }
   ];
 
