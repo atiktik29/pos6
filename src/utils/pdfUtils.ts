@@ -21,95 +21,104 @@ export const generateReceiptPDF = async (element: HTMLElement | null, transactio
       return;
     }
 
-    // Create a clean clone of the element to avoid styling issues
-    const clonedElement = element.cloneNode(true) as HTMLElement;
+    // Create a clean container with proper receipt styling
     const tempContainer = document.createElement('div');
     tempContainer.style.position = 'absolute';
     tempContainer.style.left = '-9999px';
-    tempContainer.style.width = '80mm'; // Standard thermal receipt width
-    tempContainer.appendChild(clonedElement);
+    tempContainer.style.width = '80mm';
+    tempContainer.style.padding = '5mm';
+    tempContainer.style.backgroundColor = 'white';
     document.body.appendChild(tempContainer);
+    
+    // Extract data from the original receipt element
+    const receiptData = extractReceiptData(element);
+    
+    // Create a clean receipt with consistent formatting
+    tempContainer.innerHTML = createCleanReceiptHTML(receiptData);
 
     // Apply specific styles to ensure proper formatting
     const styleElement = document.createElement('style');
     styleElement.textContent = `
-      #receipt-content {
-        width: 80mm !important;
-        padding: 5mm !important;
-        font-family: 'Courier New', monospace !important;
-        font-size: 9px !important;
-        background-color: white !important;
-        color: black !important;
-        box-sizing: border-box !important;
+      .receipt-container {
+        width: 80mm;
+        font-family: 'Courier New', monospace;
+        font-size: 9px;
+        line-height: 1.2;
+        color: black;
+        background: white;
+        padding: 5mm;
+        box-sizing: border-box;
       }
-      .receipt-header {
-        text-align: center !important;
-        margin-bottom: 8px !important;
+      .receipt-title {
+        font-size: 14px;
+        font-weight: bold;
+        text-align: center;
+        margin: 0 0 2px 0;
       }
-      .receipt-header h3 {
-        font-size: 14px !important;
-        margin: 0 0 2px 0 !important;
-        padding: 0 !important;
-        font-weight: bold !important;
+      .receipt-subtitle {
+        font-size: 9px;
+        text-align: center;
+        margin: 0 0 2px 0;
       }
-      .receipt-header p {
-        font-size: 9px !important;
-        margin: 0 0 2px 0 !important;
-        padding: 0 !important;
+      .receipt-info {
+        font-size: 9px;
+        text-align: center;
+        margin: 0 0 2px 0;
       }
       .receipt-divider {
-        border-top: 1px dashed #000 !important;
-        border-bottom: 1px dashed #000 !important;
-        margin: 4px 0 !important;
-        padding: 2px 0 !important;
-        width: 100% !important;
+        border-top: 1px dashed #000;
+        margin: 4px 0;
+        width: 100%;
       }
-      .receipt-header-row {
-        display: flex !important;
-        justify-content: space-between !important;
-        font-weight: bold !important;
-        width: 100% !important;
+      .receipt-table-header {
+        display: flex;
+        justify-content: space-between;
+        font-weight: bold;
+        margin-bottom: 4px;
       }
-      .receipt-item {
-        display: flex !important;
-        justify-content: space-between !important;
-        margin-bottom: 2px !important;
-        font-size: 8px !important;
-        width: 100% !important;
+      .receipt-product {
+        flex: 1;
+        text-align: left;
+        padding-right: 5px;
+      }
+      .receipt-qty {
+        width: 20px;
+        text-align: center;
+      }
+      .receipt-price {
+        width: 40px;
+        text-align: right;
+        padding-left: 5px;
+      }
+      .receipt-subtotal {
+        width: 40px;
+        text-align: right;
+        padding-left: 5px;
+      }
+      .receipt-item-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2px;
       }
       .receipt-summary {
-        border-top: 1px dashed #000 !important;
-        padding-top: 3px !important;
-        margin-bottom: 3px !important;
-        width: 100% !important;
+        margin-top: 4px;
       }
-      .receipt-total, 
-      .receipt-payment, 
-      .receipt-change, 
-      .receipt-method {
-        display: flex !important;
-        justify-content: space-between !important;
-        margin-bottom: 2px !important;
-        width: 100% !important;
+      .receipt-summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2px;
       }
       .receipt-footer {
-        text-align: center !important;
-        margin-top: 8px !important;
-        font-size: 8px !important;
-        border-top: 1px dashed #000 !important;
-        padding-top: 3px !important;
-        width: 100% !important;
-      }
-      .receipt-footer p {
-        margin: 0 0 2px 0 !important;
-        padding: 0 !important;
+        text-align: center;
+        margin-top: 8px;
+        font-size: 8px;
       }
     `;
     tempContainer.appendChild(styleElement);
 
     // Configure html2canvas options for better quality
     try {
-      const canvas = await html2canvas(clonedElement, {
+      const canvas = await html2canvas(tempContainer.firstChild as HTMLElement, {
         scale: 3, // Higher resolution
         useCORS: true,
         allowTaint: true,
@@ -150,6 +159,158 @@ export const generateReceiptPDF = async (element: HTMLElement | null, transactio
   }
 };
 
+/**
+ * Extract receipt data from the receipt element
+ */
+function extractReceiptData(element: HTMLElement): any {
+  try {
+    // Extract header information
+    const headerElement = element.querySelector('.receipt-header');
+    const title = headerElement?.querySelector('h3')?.textContent || 'INJAPAN FOOD';
+    const subtitle = headerElement?.querySelector('p:nth-of-type(1)')?.textContent || 'POS KASIR';
+    
+    // Extract date and cashier info
+    const dateInfo = headerElement?.querySelector('p:nth-of-type(2)')?.textContent || '';
+    const cashierInfo = headerElement?.querySelector('p:nth-of-type(3)')?.textContent || '';
+    
+    // Extract items
+    const items: Array<{name: string, qty: string, price: string}> = [];
+    const itemElements = element.querySelectorAll('.receipt-item');
+    itemElements.forEach(item => {
+      const nameElement = item.querySelector('.receipt-item-name') || 
+                          item.querySelector('.w-1/2.truncate');
+      const qtyElement = item.querySelector('.receipt-item-qty') || 
+                         item.querySelector('.w-10.text-center');
+      const priceElement = item.querySelector('.receipt-item-total') || 
+                           item.querySelector('.w-20.text-right');
+      
+      if (nameElement && qtyElement && priceElement) {
+        items.push({
+          name: nameElement.textContent || '',
+          qty: qtyElement.textContent || '',
+          price: priceElement.textContent || ''
+        });
+      }
+    });
+    
+    // Extract summary information
+    const totalElement = element.querySelector('.receipt-total');
+    const total = totalElement?.querySelector('.receipt-total-value')?.textContent || 
+                  totalElement?.querySelector('span:last-child')?.textContent || '';
+    
+    const paymentElement = element.querySelector('.receipt-payment');
+    const payment = paymentElement?.querySelector('.receipt-payment-value')?.textContent || 
+                    paymentElement?.querySelector('span:last-child')?.textContent || '';
+    
+    const changeElement = element.querySelector('.receipt-change');
+    const change = changeElement?.querySelector('.receipt-change-value')?.textContent || 
+                   changeElement?.querySelector('span:last-child')?.textContent || '';
+    
+    const methodElement = element.querySelector('.receipt-method');
+    const method = methodElement?.querySelector('.receipt-method-value')?.textContent || 
+                   methodElement?.querySelector('span:last-child')?.textContent || '';
+    
+    // Extract footer information
+    const footerElement = element.querySelector('.receipt-footer');
+    const thankYouMessage = footerElement?.querySelector('p:first-child')?.textContent || 'Terima kasih!';
+    const transactionId = footerElement?.querySelector('p:last-child')?.textContent || '';
+    
+    return {
+      title,
+      subtitle,
+      dateInfo,
+      cashierInfo,
+      items,
+      total,
+      payment,
+      change,
+      method,
+      thankYouMessage,
+      transactionId
+    };
+  } catch (error) {
+    console.error('Error extracting receipt data:', error);
+    return {
+      title: 'INJAPAN FOOD',
+      subtitle: 'POS KASIR',
+      dateInfo: new Date().toLocaleDateString(),
+      cashierInfo: 'Kasir: Admin',
+      items: [],
+      total: '¥0',
+      payment: '',
+      change: '',
+      method: '',
+      thankYouMessage: 'Terima kasih!',
+      transactionId: ''
+    };
+  }
+}
+
+/**
+ * Create clean receipt HTML with consistent formatting
+ */
+function createCleanReceiptHTML(data: any): string {
+  return `
+    <div class="receipt-container">
+      <div class="receipt-title">${data.title}</div>
+      <div class="receipt-subtitle">${data.subtitle}</div>
+      <div class="receipt-info">${data.dateInfo}</div>
+      <div class="receipt-info">${data.cashierInfo}</div>
+      
+      <div class="receipt-divider"></div>
+      
+      <div class="receipt-table-header">
+        <div class="receipt-product">Produk</div>
+        <div class="receipt-qty">Qty</div>
+        <div class="receipt-price">Harga</div>
+        <div class="receipt-subtotal">Subtotal</div>
+      </div>
+      
+      <div class="receipt-divider"></div>
+      
+      ${data.items.map(item => `
+        <div class="receipt-item-row">
+          <div class="receipt-product">${item.name}</div>
+          <div class="receipt-qty">${item.qty}</div>
+          <div class="receipt-price">${item.price}</div>
+          <div class="receipt-subtotal">${item.price}</div>
+        </div>
+      `).join('')}
+      
+      <div class="receipt-divider"></div>
+      
+      <div class="receipt-summary">
+        <div class="receipt-summary-row">
+          <div>Total</div>
+          <div>${data.total}</div>
+        </div>
+        ${data.payment ? `
+        <div class="receipt-summary-row">
+          <div>Tunai</div>
+          <div>${data.payment}</div>
+        </div>
+        ` : ''}
+        ${data.change ? `
+        <div class="receipt-summary-row">
+          <div>Kembali</div>
+          <div>${data.change}</div>
+        </div>
+        ` : ''}
+        <div class="receipt-summary-row">
+          <div>Metode:</div>
+          <div>${data.method}</div>
+        </div>
+      </div>
+      
+      <div class="receipt-divider"></div>
+      
+      <div class="receipt-footer">
+        <div>${data.thankYouMessage}</div>
+        <div>${data.transactionId}</div>
+      </div>
+    </div>
+  `;
+}
 export const generateInvoicePDF = async (element: HTMLElement | null, invoiceNumber: string) => {
   if (!element) {
     console.error('Element not found for PDF generation');
