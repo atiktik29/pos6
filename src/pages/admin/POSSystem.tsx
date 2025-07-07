@@ -47,7 +47,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Search, ShoppingCart, Plus, Minus, Trash2, CreditCard, Calendar, CheckCircle, 
+import { Plus, Minus, Search, ShoppingCart, CreditCard, QrCode, RefreshCw, Clock, Calendar, DollarSign, Trash2 } from 'lucide-react';
   RefreshCw, Receipt, Printer, AlertOctagon, Download, XCircle, DollarSign } from 'lucide-react';
 
 // Cart item interface
