@@ -49,7 +49,7 @@ const PaymentMethodInfo = ({ paymentMethod, totalAmount }: PaymentMethodInfoProp
       <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-4">
         <h4 className="font-medium text-blue-800 mb-3 flex items-center">
           <CreditCard className="w-4 h-4 mr-2" />
-          {t('checkout.totalInRupiah')}
+          {t('checkout.totalInRupiah')} 
         </h4>
         
         <div className="flex justify-between items-center mb-2">
@@ -97,17 +97,17 @@ const PaymentMethodInfo = ({ paymentMethod, totalAmount }: PaymentMethodInfoProp
       <div className="bg-white p-4 rounded-lg border border-gray-200 mb-4">
         <h4 className="font-medium text-gray-800 mb-3">{t('checkout.accountInfo')}</h4>
         <div className="space-y-2">
-          <div className="flex justify-between">
-            <span className="text-gray-600">{t('checkout.bank')}</span>
-            <span className="font-medium">BRI</span>
+          <div>
+            <span className="text-gray-600 block">{t('checkout.bank')}</span>
+            <span className="font-medium">Bank BRI</span>
           </div>
-          <div className="flex justify-between">
-            <span className="text-gray-600">{t('checkout.accountNumber')}</span>
-            <span className="font-medium">040901002213564</span>
+          <div>
+            <span className="text-gray-600 block">{t('checkout.accountNumber')}</span>
+            <span className="font-medium">0409 0100 2213 564</span>
           </div>
-          <div className="flex justify-between">
-            <span className="text-gray-600">{t('checkout.accountName')}</span>
-            <span className="font-medium"> INJAPAN LINK INDONESIA</span>
+          <div>
+            <span className="text-gray-600 block">{t('checkout.accountName')}</span>
+            <span className="font-medium">INJAPAN LINK INDONESIA</span>
           </div>
         </div>
       </div>
@@ -115,9 +115,9 @@ const PaymentMethodInfo = ({ paymentMethod, totalAmount }: PaymentMethodInfoProp
       <div className="bg-blue-50 p-3 rounded-md border border-blue-100">
         <h4 className="font-medium text-blue-800 mb-2">{t('checkout.paymentInstructions')}</h4>
         <ol className="list-decimal ml-5 space-y-1 text-blue-700 text-sm">
-          <li>{t('checkout.transferStep1')}</li>
-          <li>{t('checkout.transferStep2')}</li>
-          <li>{t('checkout.transferStep3')}</li>
+          <li>Lakukan transfer ke rekening berikut: Bank BRI 0409 0100 2213 564 a.n. INJAPAN LINK INDONESIA</li>
+          <li>Transfer dengan nominal yang tepat: ¥{totalAmount} / Rp{convertedRupiah?.toLocaleString('id-ID') || '-'}</li>
+          <li>Simpan bukti pembayaran (screenshot atau foto resi transfer)</li>
           <li>{t('checkout.uploadProofStep')}</li>
         </ol>
       </div>
