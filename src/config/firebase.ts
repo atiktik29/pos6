@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, connectFirestoreEmulator, enableIndexedDbPersistence, initializeFirestore, CACHE_SIZE_UNLIMITED } from 'firebase/firestore';
+import { getFirestore, enableIndexedDbPersistence, initializeFirestore, CACHE_SIZE_UNLIMITED } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { firebaseConfig } from '@/config/env';
 
@@ -32,14 +32,14 @@ try {
     // Initialize Firestore with settings for better offline support
     db = initializeFirestore(app, {
       cacheSizeBytes: CACHE_SIZE_UNLIMITED,
-      experimentalForceLongPolling: true, // More reliable for spotty connections
+      experimentalAutoDetectLongPolling: true, // Auto-detect best connection method
     });
     
     // Initialize storage
     storage = getStorage(app);
     
     // Enable offline persistence for Firestore
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && !window.location.href.includes('localhost')) {
       enableIndexedDbPersistence(db)
         .then(() => {
           console.log('Firestore persistence enabled successfully');

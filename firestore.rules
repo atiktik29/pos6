@@ -15,8 +15,13 @@ service cloud.firestore {
     
     // Allow anyone to create orders, and authenticated users to manage orders
     match /orders/{orderId} {
-      allow read: if request.auth != null || resource.data.user_id == null;
-      allow create: if true; // Allow anyone to create orders
+      // Allow anyone to read their own orders or guest orders
+      allow read: if request.auth != null || resource == null || resource.data.user_id == null;
+      
+      // Allow anyone to create orders (both authenticated and guest users)
+      allow create: if true;
+      
+      // Allow updates and deletes for authenticated users
       allow update, delete: if request.auth != null;
     }
     

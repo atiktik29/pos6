@@ -157,9 +157,19 @@ export const createOrder = async (orderData: {
   try {
     console.log('Creating order with data:', orderData);
     
+    // Ensure we're not passing undefined values to Firestore
+    const sanitizedOrderData = {
+      ...orderData,
+      user_id: orderData.user_id || null, // Convert undefined to null
+      shipping_fee: orderData.shipping_fee || 0,
+      payment_proof_url: orderData.payment_proof_url || null,
+      affiliate_id: orderData.affiliate_id || null,
+      visitor_id: orderData.visitor_id || null
+    };
+    
     // Get affiliate_id from localStorage if not provided
     const storedAffiliateId = localStorage.getItem('referralCode');
-    const affiliate_id = orderData.affiliate_id || storedAffiliateId || null;
+    const affiliate_id = sanitizedOrderData.affiliate_id || storedAffiliateId || null;
     
     console.log('Using affiliate_id for order:', affiliate_id);
     
@@ -167,39 +177,47 @@ export const createOrder = async (orderData: {
     
     // Set payment status based on payment method
     let payment_status = 'pending';
-    if (orderData.customer_info.payment_method === 'COD (Cash on Delivery)') {
+    if (sanitizedOrderData.customer_info.payment_method === 'COD (Cash on Delivery)') {
       payment_status = 'verified'; // COD doesn't need verification
     }
     
     const orderDoc = {
-      user_id: orderData.user_id || null,
-      customer_info: orderData.customer_info,
-      items: orderData.items,
-      total_price: orderData.total_price,
-      status: orderData.status || 'pending',
+      user_id: sanitizedOrderData.user_id,
+      customer_info: sanitizedOrderData.customer_info,
+      items: sanitizedOrderData.items,
+      total_price: sanitizedOrderData.total_price,
+      status: sanitizedOrderData.status || 'pending',
       payment_status: payment_status,
-      shipping_fee: orderData.shipping_fee || 0,
-      payment_proof_url: orderData.payment_proof_url || null,
-      affiliate_id: affiliate_id, // Include affiliate_id in the order
-      visitor_id: orderData.visitor_id || null, // Include visitor_id for tracking
+      shipping_fee: sanitizedOrderData.shipping_fee,
+      payment_proof_url: sanitizedOrderData.payment_proof_url,
+      affiliate_id: affiliate_id,
+      visitor_id: sanitizedOrderData.visitor_id,
       created_at: timestamp,
       updated_at: timestamp
     };
     
     // Create the order document
     const ordersRef = collection(db, ORDERS_COLLECTION);
-    const docRef = await addDoc(ordersRef, orderDoc);
+    
+    // Add error handling for the addDoc operation
+    let docRef;
+    try {
+      docRef = await addDoc(ordersRef, orderDoc);
+    } catch (addDocError) {
+      console.error('Error adding order document:', addDocError);
+      throw new Error(`Failed to create order: ${addDocError.message}`);
+    }
     
     console.log('Order created successfully with ID:', docRef.id);
     
     // Process affiliate commission if applicable
-    if (affiliate_id && orderData.user_id) {
+    if (affiliate_id && sanitizedOrderData.user_id) {
       try {
         // Process the affiliate commission
         await createOrderWithReferral(
-          orderData.user_id,
+          sanitizedOrderData.user_id,
           docRef.id,
-          orderData.total_price,
+          sanitizedOrderData.total_price,
           affiliate_id
         );
         console.log('Affiliate commission processed for order:', docRef.id);
