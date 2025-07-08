@@ -33,6 +33,7 @@
     "viewAll": "Lihat Semua Produk",
     "addToCart": "Tambah ke Keranjang",
     "outOfStock": "Stok Habis",
+    "notAvailable": "sedang tidak tersedia",
     "stock": "Stok"
   },
   "whyChoose": {
@@ -68,6 +69,9 @@
     "empty": "Keranjang Kosong",
     "emptyMessage": "Belum ada produk yang ditambahkan ke keranjang. Yuk mulai belanja sekarang!",
     "startShopping": "Mulai Belanja",
+    "addedSuccess": "Berhasil ditambahkan!",
+    "hasBeenAdded": "telah ditambahkan ke keranjang",
+    "viewCart": "Lihat Keranjang",
     "products": "Produk Pilihan",
     "items": "item",
     "perItem": "per item",

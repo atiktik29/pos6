@@ -33,6 +33,7 @@
     "viewAll": "View All Products",
     "addToCart": "Add to Cart",
     "outOfStock": "Out of Stock",
+    "notAvailable": "is currently unavailable",
     "stock": "Stock"
   },
   "whyChoose": {
@@ -68,6 +69,9 @@
     "empty": "Empty Cart",
     "emptyMessage": "No products have been added to the cart. Let's start shopping now!",
     "startShopping": "Start Shopping",
+    "addedSuccess": "Successfully added!",
+    "hasBeenAdded": "has been added to cart",
+    "viewCart": "View Cart",
     "products": "Selected Products",
     "items": "items",
     "perItem": "per item",

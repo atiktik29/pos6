@@ -1,11 +1,14 @@
 import { useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Product } from '@/types';
-import { formatPrice } from '@/utils/cart';
+import { formatPrice, addToCart } from '@/utils/cart';
 import { useLanguage } from '@/hooks/useLanguage';
 import AddToCartButton from '@/components/AddToCartButton';
 import { Badge } from '@/components/ui/badge';
 import { getCategoryIcon } from '@/utils/categoryVariants';
+import { useState } from 'react';
+import VariantSelectionPopup from './VariantSelectionPopup';
+import { toast } from '@/hooks/use-toast';
 
 interface ProductCardProps {
   product: Product;
@@ -15,6 +18,7 @@ interface ProductCardProps {
 const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const [showVariantPopup, setShowVariantPopup] = useState(false);
   const { t } = useLanguage();
 
   const handleAddToCart = (position: { x: number; y: number }) => {
@@ -22,14 +26,47 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
     const hasVariants = product.variants && product.variants.length > 0;
     
     if (hasVariants) {
-      // If product has variants, navigate to product detail page instead
-      navigate(`/products/${product.id}`);
+      // If product has variants, show variant selection popup
+      setShowVariantPopup(true);
       return;
     }
     
     // Otherwise proceed with normal add to cart
     if (onAddToCart && !hasVariants) {
       onAddToCart(product, position);
+    }
+  };
+  
+  const handleVariantAddToCart = (selectedVariant, quantity) => {
+    // Create product with variant information
+    const productToAdd = {
+      ...product,
+      price: selectedVariant ? selectedVariant.price : product.price,
+      selectedVariantName: selectedVariant?.name || null,
+      selectedVariants: selectedVariant ? { variant: selectedVariant.name } : {}
+    };
+    
+    // Add to cart
+    addToCart(productToAdd, quantity);
+    
+    // Show success toast
+    toast({
+      title: "Berhasil!",
+      description: t('productDetail.addedToCart', { 
+        name: product.name, 
+        variant: selectedVariant ? ` (${selectedVariant.name})` : '' 
+      }),
+    });
+    
+    // Trigger animation if available
+    if (onAddToCart) {
+      const rect = cardRef.current?.getBoundingClientRect();
+      if (rect) {
+        onAddToCart(productToAdd, {
+          x: rect.left + rect.width / 2,
+          y: rect.top + rect.height / 2
+        });
+      }
     }
   };
 
@@ -105,6 +142,14 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
           disabled={product.stock === 0}
         />
       </div>
+      
+      {/* Variant Selection Popup */}
+      <VariantSelectionPopup
+        isOpen={showVariantPopup}
+        onClose={() => setShowVariantPopup(false)}
+        product={product}
+        onAddToCart={handleVariantAddToCart}
+      />
     </div>
   );
 };

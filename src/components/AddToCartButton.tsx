@@ -31,8 +31,8 @@ const AddToCartButton = ({
     // Check if product is out of stock or button is disabled
     if (product.stock === 0 || disabled) {
       toast({
-        title: "Stok Habis",
-        description: `${product.name} sedang tidak tersedia`,
+        title: t ? t('products.outOfStock') : "Stok Habis",
+        description: `${product.name} ${t ? t('products.notAvailable') : "sedang tidak tersedia"}`,
         variant: "destructive",
         duration: 2000,
       });
@@ -42,8 +42,8 @@ const AddToCartButton = ({
     // Check if variants are required but not selected
     if (variantsRequired) {
       toast({
-        title: "Pilih Varian",
-        description: "Silakan pilih varian produk terlebih dahulu",
+        title: t ? t('productDetail.selectVariantRequired') : "Pilih Varian",
+        description: t ? t('productDetail.selectVariantMessage') : "Silakan pilih varian produk terlebih dahulu",
         variant: "destructive",
       });
       return;
@@ -66,15 +66,15 @@ const AddToCartButton = ({
 
     // Show toast with cart link
     toast({
-      title: "Berhasil ditambahkan!",
-      description: `${quantity}x ${product.name} telah ditambahkan ke keranjang`,
+      title: t ? t('cart.addedSuccess') : "Berhasil ditambahkan!",
+      description: `${quantity}x ${product.name} ${t ? t('cart.hasBeenAdded') : "telah ditambahkan ke keranjang"}`,
       duration: 3000,
       action: (
         <button 
           className="text-primary hover:text-primary/80 font-medium"
           onClick={() => window.location.href = '/cart'}
         >
-          Lihat Keranjang
+          {t ? t('cart.viewCart') : "Lihat Keranjang"}
         </button>
       )
     });

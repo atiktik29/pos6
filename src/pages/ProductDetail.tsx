@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useProduct, useProducts } from '@/hooks/useProducts';
-import { formatPrice } from '@/utils/cart';
+import { formatPrice, addToCart as addToCartUtil } from '@/utils/cart';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useCartAnimation } from '@/hooks/useCartAnimation';
 import { ShoppingCart, Truck, Check } from 'lucide-react';
@@ -14,6 +14,7 @@ import { toast } from '@/hooks/use-toast';
 import { ProductVariant } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { getCategoryIcon } from '@/utils/categoryVariants';
+import VariantSelectionPopup from '@/components/VariantSelectionPopup';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -21,6 +22,7 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
   const [variantSelectionError, setVariantSelectionError] = useState<string | null>(null);
+  const [showVariantPopup, setShowVariantPopup] = useState(false);
   const quantityRef = useRef<HTMLDivElement>(null);
   
   const { data: product, isLoading } = useProduct(id!);
@@ -83,11 +85,12 @@ const ProductDetail = () => {
     // Check if variants are required but not selected
     if (hasVariants && !selectedVariant) {
       toast({
-        title: t('productDetail.selectVariantRequired'),
+        title: t('productDetail.selectVariantRequired'), 
         description: t('productDetail.selectVariantMessage'),
         variant: "destructive"
       });
       setVariantSelectionError(t('productDetail.selectVariantMessage'));
+      setShowVariantPopup(true);
       return;
     }
 
@@ -127,6 +130,37 @@ const ProductDetail = () => {
         variant: selectedVariant ? ` (${selectedVariant.name})` : '' 
       }),
     });
+  };
+
+  const handleVariantAddToCart = (selectedVariant, quantity) => {
+    // Create product with variant information
+    const productToAdd = {
+      ...product,
+      price: selectedVariant ? selectedVariant.price : product.price,
+      selectedVariantName: selectedVariant?.name || null,
+      selectedVariants: selectedVariant ? { variant: selectedVariant.name } : {}
+    };
+    
+    // Add to cart
+    addToCartUtil(productToAdd, quantity);
+    
+    // Show success toast
+    toast({
+      title: "Berhasil!",
+      description: t('productDetail.addedToCart', { 
+        name: product.name, 
+        variant: selectedVariant ? ` (${selectedVariant.name})` : '' 
+      }),
+    });
+    
+    // Trigger animation
+    const rect = quantityRef.current?.getBoundingClientRect();
+    if (rect) {
+      handleAddToCart({
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2
+      });
+    }
   };
 
   if (isLoading) {
@@ -364,6 +398,14 @@ const ProductDetail = () => {
           </div>
         )}
       </div>
+      
+      {/* Variant Selection Popup */}
+      <VariantSelectionPopup
+        isOpen={showVariantPopup}
+        onClose={() => setShowVariantPopup(false)}
+        product={product}
+        onAddToCart={handleVariantAddToCart}
+      />
 
       <Footer />
     </div>
