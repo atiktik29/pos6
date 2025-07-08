@@ -37,7 +37,8 @@ export const useCreateOrder = () => {
       customerInfo,
       userId,
       shipping_fee,
-      affiliate_id
+      affiliate_id,
+      visitor_id
     }: {
       items: CartItem[];
       totalPrice: number;
@@ -45,6 +46,7 @@ export const useCreateOrder = () => {
       userId?: string;
       shipping_fee?: number;
       affiliate_id?: string;
+      visitor_id?: string;
     }) => {
       return await createOrder({
         user_id: userId,
@@ -53,7 +55,8 @@ export const useCreateOrder = () => {
         total_price: totalPrice,
         status: 'pending',
         shipping_fee: shipping_fee,
-        affiliate_id: affiliate_id
+        affiliate_id: affiliate_id,
+        visitor_id: visitor_id
       });
     },
     onSuccess: () => {
