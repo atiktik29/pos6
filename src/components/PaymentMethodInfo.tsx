@@ -99,15 +99,15 @@ const PaymentMethodInfo = ({ paymentMethod, totalAmount }: PaymentMethodInfoProp
         <div className="space-y-2">
           <div className="flex justify-between">
             <span className="text-gray-600">{t('checkout.bank')}</span>
-            <span className="font-medium">BCA</span>
+            <span className="font-medium">BRI</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">{t('checkout.accountNumber')}</span>
-            <span className="font-medium">1234567890</span>
+            <span className="font-medium">040901002213564</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">{t('checkout.accountName')}</span>
-            <span className="font-medium">PT. Injapan Shop</span>
+            <span className="font-medium"> INJAPAN LINK INDONESIA</span>
           </div>
         </div>
       </div>
