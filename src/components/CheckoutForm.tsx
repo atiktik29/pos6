@@ -40,7 +40,7 @@ interface CheckoutFormProps {
   onOrderComplete: () => void;
 }
 
-const CheckoutForm = ({ cart, total, onOrderComplete }: CheckoutFormProps) => {
+export default function CheckoutForm({ cart, total, onOrderComplete }: CheckoutFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { t } = useLanguage();
   const { user } = useAuth();
