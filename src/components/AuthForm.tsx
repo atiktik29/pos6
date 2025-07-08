@@ -186,7 +186,7 @@ const AuthForm = () => {
             <img 
               src="/logo.png" 
               alt="Injapan Food Logo" 
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain bg-white p-2"
             />
           </div>
           <h2 className="text-3xl font-bold text-gray-900">Injapan Food</h2>
