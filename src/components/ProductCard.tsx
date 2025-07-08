@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Product } from '@/types';
 import { formatPrice } from '@/utils/cart';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -14,10 +14,21 @@ interface ProductCardProps {
 
 const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
   const cardRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
   const { t } = useLanguage();
 
   const handleAddToCart = (position: { x: number; y: number }) => {
-    if (onAddToCart) {
+    // Check if product has variants
+    const hasVariants = product.variants && product.variants.length > 0;
+    
+    if (hasVariants) {
+      // If product has variants, navigate to product detail page instead
+      navigate(`/products/${product.id}`);
+      return;
+    }
+    
+    // Otherwise proceed with normal add to cart
+    if (onAddToCart && !hasVariants) {
       onAddToCart(product, position);
     }
   };
@@ -83,6 +94,7 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
       {/* Add to Cart Button */}
       <div className="p-3 sm:p-4 pt-0" onClick={(e) => e.stopPropagation()}>
         <AddToCartButton
+          variantsRequired={product.variants && product.variants.length > 0}
           product={product}
           className={`w-full py-2 sm:py-2.5 text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200 ${
             product.stock === 0 

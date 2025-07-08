@@ -1,6 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/hooks/useLanguage';
 import { ProductVariant } from '@/types';
+import { AlertCircle } from 'lucide-react';
 
 interface ProductVariantDisplayProps {
   variants: ProductVariant[];
@@ -79,20 +80,36 @@ const ProductVariantDisplay = ({
       </div>
       
       {selectedVariant && (
-        <div className="mt-3 p-3 bg-gray-50 rounded-lg">
+        <div className="mt-3 p-3 bg-green-50 border border-green-100 rounded-lg">
           <div className="flex justify-between items-center">
-            <div>
-              <span className="font-medium text-gray-900">{t('productDetail.variantSelected')}: </span>
-              <span className="text-gray-700">{selectedVariant.name}</span>
+            <div className="flex items-center">
+              <span className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center mr-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
+              <span className="font-medium text-green-800">{t('productDetail.variantSelected')}: </span>
+              <span className="text-green-700 ml-1">{selectedVariant.name}</span>
             </div>
             <div className="text-right">
-              <div className="text-lg font-bold text-red-600">
+              <div className="text-lg font-bold text-green-700">
                 ¥{selectedVariant.price.toLocaleString()}
               </div>
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-green-600">
                 {t('products.stock')}: {selectedVariant.stock} {t('productDetail.available')}
               </div>
             </div>
+          </div>
+        </div>
+      )}
+      
+      {variants.length > 0 && !selectedVariant && (
+        <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <div className="flex items-start">
+            <AlertCircle className="w-5 h-5 text-yellow-500 mr-2 flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-yellow-700">
+              {t('productDetail.selectVariantMessage')}
+            </p>
           </div>
         </div>
       )}

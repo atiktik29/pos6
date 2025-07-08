@@ -20,6 +20,7 @@ const ProductDetail = () => {
   const { t } = useLanguage();
   const [quantity, setQuantity] = useState(1);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
+  const [variantSelectionError, setVariantSelectionError] = useState<string | null>(null);
   const quantityRef = useRef<HTMLDivElement>(null);
   
   const { data: product, isLoading } = useProduct(id!);
@@ -44,11 +45,13 @@ const ProductDetail = () => {
     // Reset variant selection when product changes
     console.log('Product changed, resetting variants');
     setSelectedVariant(null);
+    setVariantSelectionError(null);
   }, [product]);
 
   const handleVariantSelect = (variant: ProductVariant) => {
     console.log('Variant selected:', variant);
     setSelectedVariant(variant);
+    setVariantSelectionError(null);
   };
 
   const getEffectivePrice = () => {
@@ -80,10 +83,11 @@ const ProductDetail = () => {
     // Check if variants are required but not selected
     if (hasVariants && !selectedVariant) {
       toast({
-        title: "Pilih Varian",
+        title: t('productDetail.selectVariantRequired'),
         description: t('productDetail.selectVariantMessage'),
         variant: "destructive"
       });
+      setVariantSelectionError(t('productDetail.selectVariantMessage'));
       return;
     }
 
@@ -270,6 +274,9 @@ const ProductDetail = () => {
             {effectiveStock > 0 ? (
               <button
                 onClick={() => {
+                  // Clear any previous error
+                  setVariantSelectionError(null);
+                  
                   const rect = quantityRef.current?.getBoundingClientRect();
                   if (rect) {
                     handleAddToCart({
@@ -280,7 +287,7 @@ const ProductDetail = () => {
                 }}
                 disabled={hasVariants && !selectedVariant}
                 className={`w-full text-lg py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg flex items-center justify-center space-x-3 group ${
-                  hasVariants && !selectedVariant
+                  (hasVariants && !selectedVariant)
                     ? 'bg-gray-400 cursor-not-allowed'
                     : 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white'
                 }`}
@@ -288,7 +295,7 @@ const ProductDetail = () => {
                 <ShoppingCart className="w-5 h-5 group-hover:animate-bounce" />
                 <span>
                   {hasVariants && !selectedVariant 
-                    ? t('buttons.selectVariant')
+                    ? t('productDetail.selectVariantRequired')
                     : t('buttons.addToCart')
                   }
                 </span>
@@ -301,6 +308,18 @@ const ProductDetail = () => {
                 <ShoppingCart className="w-5 h-5" />
                 <span>{t('buttons.outOfStock')}</span>
               </button>
+            )}
+            
+            {/* Variant Selection Error Message */}
+            {variantSelectionError && (
+              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-sm text-red-600 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  {variantSelectionError}
+                </p>
+              </div>
             )}
 
             <div className="grid grid-cols-2 gap-4 pt-6 border-t border-gray-200">

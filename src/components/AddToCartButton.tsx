@@ -10,6 +10,7 @@ interface AddToCartButtonProps {
   product: Product;
   quantity?: number;
   className?: string;
+  variantsRequired?: boolean;
   onAddToCart?: (position: { x: number; y: number }) => void;
   disabled?: boolean;
 }
@@ -18,6 +19,7 @@ const AddToCartButton = ({
   product, 
   quantity = 1, 
   className = "",
+  variantsRequired = false,
   onAddToCart,
   disabled = false
 }: AddToCartButtonProps) => {
@@ -26,12 +28,23 @@ const AddToCartButton = ({
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   const handleAddToCart = () => {
+    // Check if product is out of stock or button is disabled
     if (product.stock === 0 || disabled) {
       toast({
         title: "Stok Habis",
         description: `${product.name} sedang tidak tersedia`,
         variant: "destructive",
         duration: 2000,
+      });
+      return;
+    }
+    
+    // Check if variants are required but not selected
+    if (variantsRequired) {
+      toast({
+        title: "Pilih Varian",
+        description: "Silakan pilih varian produk terlebih dahulu",
+        variant: "destructive",
       });
       return;
     }

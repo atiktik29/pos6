@@ -233,6 +233,7 @@
     "available": "Tersedia",
     "variantSelected": "Varian Dipilih",
     "selectVariantMessage": "Silakan pilih varian produk sebelum menambah ke keranjang",
+    "selectVariantRequired": "Pilih Varian Terlebih Dahulu",
     "insufficientStock": "Stok Tidak Cukup",
     "availableStockOnly": "Stok tersedia hanya {stock}",
     "addedToCart": "{name}{variant} ditambahkan ke keranjang",

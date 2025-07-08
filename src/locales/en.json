@@ -233,6 +233,7 @@
     "available": "Available",
     "variantSelected": "Selected Variant",
     "selectVariantMessage": "Please select a product variant before adding to cart",
+    "selectVariantRequired": "Select Variant First",
     "insufficientStock": "Insufficient Stock",
     "availableStockOnly": "Available stock is only {stock}",
     "addedToCart": "{name}{variant} added to cart",
