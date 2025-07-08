@@ -124,11 +124,8 @@ const ProductDetail = () => {
     triggerAnimation(product, position, cartPosition);
 
     toast({
-      title: "Berhasil!",
-      description: t('productDetail.addedToCart', { 
-        name: product.name, 
-        variant: selectedVariant ? ` (${selectedVariant.name})` : '' 
-      }),
+      title: "✅ Berhasil",
+      description: `${product.name}${selectedVariant ? ` (${selectedVariant.name})` : ''} berhasil ditambahkan ke keranjang.`,
     });
   };
 
@@ -146,11 +143,8 @@ const ProductDetail = () => {
     
     // Show success toast
     toast({
-      title: "Berhasil!",
-      description: t('productDetail.addedToCart', { 
-        name: product.name, 
-        variant: selectedVariant ? ` (${selectedVariant.name})` : '' 
-      }),
+      title: "✅ Berhasil",
+      description: `${product.name}${selectedVariant ? ` (${selectedVariant.name})` : ''} berhasil ditambahkan ke keranjang.`,
     });
     
     // Trigger animation

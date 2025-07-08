@@ -68,8 +68,8 @@ const AddToCartButton = ({
 
     // Show toast with cart link
     toast({
-      title: t ? t('cart.addedSuccess') : "Berhasil ditambahkan!",
-      description: `${quantity}x ${product.name} ${t ? t('cart.hasBeenAdded') : "telah ditambahkan ke keranjang"}`,
+      title: "✅ Berhasil",
+      description: `${product.name}${product.selectedVariantName ? ` (${product.selectedVariantName})` : ''} berhasil ditambahkan ke keranjang.`,
       duration: 3000,
       action: (
         <button 
