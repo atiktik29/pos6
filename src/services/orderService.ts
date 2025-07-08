@@ -167,16 +167,6 @@ export const createOrder = async (orderData: {
       visitor_id: orderData.visitor_id || null
     };
     
-    // Ensure we're not passing undefined values to Firestore
-    const sanitizedOrderData = {
-      ...orderData,
-      user_id: orderData.user_id || null, // Convert undefined to null
-      shipping_fee: orderData.shipping_fee || 0,
-      payment_proof_url: orderData.payment_proof_url || null,
-      affiliate_id: orderData.affiliate_id || null,
-      visitor_id: orderData.visitor_id || null
-    };
-    
     // Get affiliate_id from localStorage if not provided
     const storedAffiliateId = localStorage.getItem('referralCode');
     const affiliate_id = sanitizedOrderData.affiliate_id || storedAffiliateId || null;
@@ -208,14 +198,6 @@ export const createOrder = async (orderData: {
     
     // Create the order document
     const ordersRef = collection(db, ORDERS_COLLECTION);
-    // Add error handling for the addDoc operation
-    let docRef;
-    try {
-      docRef = await addDoc(ordersRef, orderDoc);
-    } catch (addDocError) {
-      console.error('Error adding order document:', addDocError);
-      throw new Error(`Failed to create order: ${addDocError.message}`);
-    }
     // Add error handling for the addDoc operation
     let docRef;
     try {

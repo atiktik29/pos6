@@ -618,5 +618,3 @@ Mohon konfirmasi pesanan saya. Terima kasih banyak!`;
     </div>
   );
 };
-
-export default CheckoutForm;
