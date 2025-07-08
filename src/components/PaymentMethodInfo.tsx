@@ -214,10 +214,10 @@ const PaymentMethodInfo = ({ paymentMethod, totalAmount }: PaymentMethodInfoProp
         {/* QR Code display */}
         <div className="flex justify-center mb-4">
           <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-            <img 
-              src="/lovable-uploads/aiease_1751319905737 (1) copy.jpg" 
-              alt="QRIS Payment QR Code" 
-              className="w-[200px] h-auto"
+            <img
+              src="/lovable-uploads/1751983369470.jpeg"
+              alt="QR Code Pembayaran QRIS INJAPAN FOOD INDONESIA NMID: ID1025415188982"
+              className="w-[250px] h-auto"
             />
           </div>
         </div>
