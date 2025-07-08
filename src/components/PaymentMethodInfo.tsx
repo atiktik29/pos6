@@ -217,7 +217,7 @@ const PaymentMethodInfo = ({ paymentMethod, totalAmount }: PaymentMethodInfoProp
             <img
               src="/lovable-uploads/1751983369470.jpeg"
               alt="QR Code Pembayaran QRIS INJAPAN FOOD INDONESIA NMID: ID1025415188982"
-              className="w-[250px] h-auto"
+              className="w-[280px] h-auto"
             />
           </div>
         </div>
