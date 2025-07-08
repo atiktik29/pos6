@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Product } from '@/types';
 import { useCart } from '@/hooks/useCart';
 import { toast } from '@/hooks/use-toast';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface AddToCartButtonProps {
   product: Product;
@@ -24,6 +25,7 @@ const AddToCartButton = ({
   disabled = false
 }: AddToCartButtonProps) => {
   const { addToCart } = useCart();
+  const { t } = useLanguage();
   const [isAdded, setIsAdded] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
