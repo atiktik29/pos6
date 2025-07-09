@@ -26,10 +26,11 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
       if (user) {
         console.log('Checking admin status for user:', user.email);
         
-        // Enhanced admin emails list with more flexibility
+        // Enhanced admin emails list with additional admin
         const adminEmails = [
           'admin@gmail.com', 
-          'ari4rich@gmail.com'
+          'ari4rich@gmail.com',
+          'newadmin@gmail.com'
         ];
         
         const userIsAdmin = adminEmails.includes(user.email || '');
