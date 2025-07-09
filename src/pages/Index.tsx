@@ -5,7 +5,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useProducts } from '@/hooks/useProducts';
 import { useLanguage } from '@/hooks/useLanguage';
-import { getCategoriesWithVariants, getCategoryIcon } from '@/utils/categoryVariants';
+import { getCategoriesWithVariants, getCategoryIcon, getCategoryUrlPath } from '@/utils/categoryVariants';
 
 const Index = () => {
   const { data: products = [], isLoading: productsLoading, isError: productsError } = useProducts();
@@ -114,7 +114,7 @@ const Index = () => {
             {categories.map((category) => (
               <Link
                 key={category}
-                to={`/kategori/${category.toLowerCase().replace(/\s+/g, '-').replace(/&/g, 'dan')}`}
+                to={`/kategori/${getCategoryUrlPath(category)}`}
                 className="bg-white hover:bg-red-50 hover:border-red-200 p-4 sm:p-6 rounded-xl text-center transition-all duration-200 transform hover:scale-105 border border-gray-100 shadow-sm group"
               >
                 <div className="text-2xl sm:text-3xl mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-200">

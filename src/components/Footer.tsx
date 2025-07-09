@@ -158,7 +158,7 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-bold mb-6">Kategori Populer</h4>
             <ul className="space-y-3 text-gray-300">
-              {categoryLinks.map((category) => (
+              {categoryLinks.map((category, index) => (
                 <li key={category.path} className="hover:text-white transition-colors">
                   <Link to={category.path} className="flex items-center group">
                     <span className="mr-2">{category.icon}</span>

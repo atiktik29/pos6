@@ -147,3 +147,18 @@ export const mapLegacyCategory = (category: string): string => {
   
   return categoryMapping[category] || category;
 };
+
+// Function to convert category name to URL path
+export const getCategoryUrlPath = (category: string): string => {
+  const pathMapping = {
+    'Sayur & Bumbu': 'sayur-bumbu',
+    'Bahan Masak Beku': 'bahan-masak-beku',
+    'Kerupuk': 'kerupuk',
+    'Makanan Ringan': 'makanan-ringan',
+    'Bumbu Dapur': 'bumbu-dapur',
+    'Makanan Siap Saji': 'makanan-siap-saji',
+    'Sayur & Bahan Segar': 'sayur-bahan-segar'
+  };
+  
+  return pathMapping[category] || category.toLowerCase().replace(/\s+/g, '-').replace(/&/g, 'dan');
+};
