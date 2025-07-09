@@ -26,26 +26,15 @@ const Invoice = ({ order, invoiceNumber }: InvoiceProps) => {
               size: A4;
               margin: 0;
             }
-            @page {
-              size: A4;
-              margin: 0;
-            }
             body {
               margin: 0;
               padding: 0;
-              -webkit-print-color-adjust: exact !important;
-              print-color-adjust: exact !important;
-              color-adjust: exact !important;
-              background-color: white !important;
-              color: black !important;
               width: 210mm;
               height: 297mm;
               font-size: 12px;
               font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             }
             .print-container {
-              background-color: white !important;
-              color: black !important;
               width: 100%;
               max-width: 100%;
               padding: 15mm;
@@ -55,10 +44,6 @@ const Invoice = ({ order, invoiceNumber }: InvoiceProps) => {
               color: black !important;
               page-break-after: always;
             }
-            .print-container * {
-              visibility: visible !important;
-              color: inherit !important;
-            }
             .page-break-avoid {
               page-break-inside: avoid;
             }
@@ -67,19 +52,6 @@ const Invoice = ({ order, invoiceNumber }: InvoiceProps) => {
             }
             tr {
               page-break-inside: avoid;
-            }
-            img, svg {
-              display: block !important;
-              visibility: visible !important;
-              opacity: 1 !important;
-            }
-            * {
-              -webkit-print-color-adjust: exact !important;
-              print-color-adjust: exact !important;
-              color-adjust: exact !important;
-            }
-            .no-print, .no-print * {
-              display: none !important;
             }
             * {
               -webkit-print-color-adjust: exact !important;
