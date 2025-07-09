@@ -49,6 +49,21 @@ service cloud.firestore {
       allow write, create, update, delete: if request.auth != null;
     }
     
+    // Allow access to financial data collections for admins
+    match /financial_transactions/{transactionId} {
+      allow read, list, write, create, update, delete: if request.auth != null && isAdmin();
+    }
+    
+    // Allow access to daily sales data for admins
+    match /daily_sales/{dateId} {
+      allow read, list, write, create, update, delete: if request.auth != null && isAdmin();
+    }
+    
+    // Allow access to monthly financial data for admins
+    match /monthly_financial_data/{monthId} {
+      allow read, list, write, create, update, delete: if request.auth != null && isAdmin();
+    }
+    
     // Allow affiliate-related collections
     match /affiliates/{affiliateId} {
       allow read: if true;
