@@ -38,6 +38,14 @@ const InvoiceModal = ({ isOpen, onClose, order }: InvoiceModalProps) => {
         <head>
           <title>Invoice ${invoiceNumber}</title>
           <style>
+            html, body {
+              margin: 0;
+              padding: 0;
+              background-color: white !important;
+              color: black !important;
+              height: 100%;
+              width: 100%;
+            }
             @page {
               size: A4;
               margin: 0;
@@ -46,13 +54,16 @@ const InvoiceModal = ({ isOpen, onClose, order }: InvoiceModalProps) => {
               font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
               margin: 0; 
               padding: 0; 
+              margin: 0 !important; 
+              padding: 0 !important; 
               background-color: white !important;
               color: black !important;
-              background: white;
               width: 210mm;
               height: 297mm;
             }
             .print-container {
+              background-color: white !important;
+              color: black !important;
               width: 100%;
               padding: 15mm;
               box-sizing: border-box;
@@ -225,6 +236,25 @@ const InvoiceModal = ({ isOpen, onClose, order }: InvoiceModalProps) => {
             .mb-4 {
               margin-bottom: 1rem;
             }
+            * {
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+              color-adjust: exact !important;
+            }
+            img, svg {
+              display: block !important;
+              visibility: visible !important;
+              opacity: 1 !important;
+            }
+            .text-primary, .text-primary-foreground, 
+            .text-red-600, .text-blue-600, .text-green-600, 
+            .text-yellow-600, .text-gray-600, .text-gray-500 {
+              color: black !important;
+            }
+            .bg-primary, .bg-red-100, .bg-blue-100, 
+            .bg-green-100, .bg-yellow-100, .bg-gray-100 {
+              background-color: white !important;
+            }
           </style>
         </head>
         <body>
@@ -238,11 +268,13 @@ const InvoiceModal = ({ isOpen, onClose, order }: InvoiceModalProps) => {
     printWindow.document.close();
     printWindow.focus();
     
-    // Increase timeout to ensure content is fully loaded
-    setTimeout(() => {
+
+    // Increase timeout to ensure content is fully loaded and rendered
+    setTimeout(function() {
       printWindow.print();
-      // Don't automatically close the window after print dialog
-      // This allows users to see if there was an issue
+      // Keep the window open so user can see if there was an issue
+      // User can manually close after printing
+    }, 1000);
       // printWindow.close();
     }, 500);
   };

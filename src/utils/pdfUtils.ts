@@ -55,6 +55,8 @@ export const generateInvoicePDF = async (element: HTMLElement | null, invoiceNum
         format: 'a4',
         putOnlyUsedFonts: true,
         compress: true
+        putOnlyUsedFonts: true,
+        compress: true
       });
       
       // Try to add logo to PDF
@@ -90,6 +92,11 @@ export const generateInvoicePDF = async (element: HTMLElement | null, invoiceNum
           const logoWidth = 30; // in mm
           const logoHeight = 30; // in mm
           const logoX = (pdfWidth - logoWidth) / 2; // Center horizontally
+          pdf.addImage(logoData, 'PNG', logoX, 5, logoWidth, logoHeight);
+        } catch (logoError) {
+          console.warn('Could not add logo to PDF:', logoError);
+          // Continue without logo if there's an error
+        }
           pdf.addImage(logoData, 'PNG', logoX, 5, logoWidth, logoHeight);
         } catch (logoError) {
           console.warn('Could not add logo to PDF:', logoError);
