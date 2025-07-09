@@ -109,13 +109,10 @@ export const getCategoriesWithVariants = () => {
 
 // Fungsi untuk mengubah nama kategori menjadi slug URL yang valid
 export const getCategorySlug = (category: string): string => {
-  return category
-    .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace(/&/g, 'dan')
-    .replace(/[^a-z0-9-]/g, '')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '');
+  return category.toLowerCase()
+    .replace(/\s+/g, '-')     // Replace spaces with hyphens
+    .replace(/&/g, '-')       // Replace & with hyphen
+    .replace(/[^a-z0-9-]/g, ''); // Remove any other special characters
 };
 
 // Fungsi untuk mendapatkan kategori dari slug URL
