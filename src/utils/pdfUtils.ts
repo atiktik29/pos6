@@ -52,7 +52,9 @@ export const generateInvoicePDF = async (element: HTMLElement | null, invoiceNum
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
-        format: 'a4'
+        format: 'a4',
+        putOnlyUsedFonts: true,
+        compress: true
       });
       
       // Try to add logo to PDF
@@ -60,34 +62,39 @@ export const generateInvoicePDF = async (element: HTMLElement | null, invoiceNum
         // Add logo to PDF
         const logoUrl = "/logo.jpg";
         // Create a temporary image element to load the logo
-        const logoImg = new Image();
-        logoImg.crossOrigin = "Anonymous";  // Important for CORS
-        logoImg.src = logoUrl;
+        try {
+          const logoImg = new Image();
+          logoImg.crossOrigin = "Anonymous";  // Important for CORS
+          logoImg.src = logoUrl;
         
-        // Wait for the image to load with timeout
-        await Promise.race([
-          new Promise((resolve, reject) => {
-            logoImg.onload = resolve;
-            logoImg.onerror = reject;
-          }),
-          new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Logo load timeout')), 3000)
-          )
-        ]);
+          // Wait for the image to load with timeout
+          await Promise.race([
+            new Promise((resolve, reject) => {
+              logoImg.onload = resolve;
+              logoImg.onerror = reject;
+            }),
+            new Promise((_, reject) => 
+              setTimeout(() => reject(new Error('Logo load timeout')), 3000)
+            )
+          ]);
         
-        // Create a canvas for the logo
-        const logoCanvas = document.createElement('canvas');
-        logoCanvas.width = logoImg.width;
-        logoCanvas.height = logoImg.height;
-        const logoCtx = logoCanvas.getContext('2d');
-        logoCtx?.drawImage(logoImg, 0, 0);
+          // Create a canvas for the logo
+          const logoCanvas = document.createElement('canvas');
+          logoCanvas.width = logoImg.width;
+          logoCanvas.height = logoImg.height;
+          const logoCtx = logoCanvas.getContext('2d');
+          logoCtx?.drawImage(logoImg, 0, 0);
         
-        // Add logo to PDF
-        const logoData = logoCanvas.toDataURL('image/png');
-        const logoWidth = 30; // in mm
-        const logoHeight = 30; // in mm
-        const logoX = (pdfWidth - logoWidth) / 2; // Center horizontally
-        pdf.addImage(logoData, 'PNG', logoX, 5, logoWidth, logoHeight);
+          // Add logo to PDF
+          const logoData = logoCanvas.toDataURL('image/png');
+          const logoWidth = 30; // in mm
+          const logoHeight = 30; // in mm
+          const logoX = (pdfWidth - logoWidth) / 2; // Center horizontally
+          pdf.addImage(logoData, 'PNG', logoX, 5, logoWidth, logoHeight);
+        } catch (logoError) {
+          console.warn('Could not add logo to PDF:', logoError);
+          // Continue without logo if there's an error
+        }
       } catch (logoError) {
         console.warn('Could not add logo to PDF:', logoError);
         // Continue without logo if there's an error

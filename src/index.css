@@ -53,6 +53,39 @@
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}
+
+@media print {
+  body {
+    background-color: white !important;
+    color: black !important;
+  }
+  
+  .print-container {
+    background-color: white !important;
+    color: black !important;
+    padding: 15mm;
+    margin: 0;
+    box-shadow: none !important;
+  }
+  
+  .no-print, .no-print * {
+    display: none !important;
+  }
+  
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+  
+  img, svg {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 }
 

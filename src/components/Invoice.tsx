@@ -40,6 +40,8 @@ const Invoice = ({ order, invoiceNumber }: InvoiceProps) => {
               padding: 15mm;
               margin: 0;
               box-shadow: none;
+              background-color: white !important;
+              color: black !important;
               page-break-after: always;
             }
             .page-break-avoid {
@@ -50,6 +52,11 @@ const Invoice = ({ order, invoiceNumber }: InvoiceProps) => {
             }
             tr {
               page-break-inside: avoid;
+            }
+            * {
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+              color-adjust: exact !important;
             }
           }
         `}

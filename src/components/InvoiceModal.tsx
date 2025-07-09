@@ -28,10 +28,10 @@ const InvoiceModal = ({ isOpen, onClose, order }: InvoiceModalProps) => {
   const handlePrint = () => {
     const printContent = invoiceRef.current;
     if (!printContent) return;
-
+    
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
-
+    
     printWindow.document.write(`
       <!DOCTYPE html>
       <html>
@@ -46,6 +46,8 @@ const InvoiceModal = ({ isOpen, onClose, order }: InvoiceModalProps) => {
               font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
               margin: 0; 
               padding: 0; 
+              background-color: white !important;
+              color: black !important;
               background: white;
               width: 210mm;
               height: 297mm;
@@ -54,6 +56,8 @@ const InvoiceModal = ({ isOpen, onClose, order }: InvoiceModalProps) => {
               width: 100%;
               padding: 15mm;
               box-sizing: border-box;
+              background-color: white !important;
+              color: black !important;
             }
             .page-break-avoid {
               page-break-inside: avoid;
@@ -204,6 +208,17 @@ const InvoiceModal = ({ isOpen, onClose, order }: InvoiceModalProps) => {
             .pt-6 {
               padding-top: 1.5rem;
             }
+            * {
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+              color-adjust: exact !important;
+              background-color: transparent !important;
+            }
+            img, svg {
+              display: block !important;
+              visibility: visible !important;
+              opacity: 1 !important;
+            }
             .mb-2 {
               margin-bottom: 0.5rem;
             }
@@ -219,14 +234,17 @@ const InvoiceModal = ({ isOpen, onClose, order }: InvoiceModalProps) => {
         </body>
       </html>
     `);
-
+    
     printWindow.document.close();
     printWindow.focus();
     
+    // Increase timeout to ensure content is fully loaded
     setTimeout(() => {
       printWindow.print();
-      printWindow.close();
-    }, 250);
+      // Don't automatically close the window after print dialog
+      // This allows users to see if there was an issue
+      // printWindow.close();
+    }, 500);
   };
 
   return (
