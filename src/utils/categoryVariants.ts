@@ -112,7 +112,9 @@ export const getCategorySlug = (category: string): string => {
   return category.toLowerCase()
     .replace(/\s+/g, '-')     // Replace spaces with hyphens
     .replace(/&/g, '-')       // Replace & with hyphen
-    .replace(/[^a-z0-9-]/g, ''); // Remove any other special characters
+    .replace(/[^a-z0-9-]/g, '') // Remove any other special characters
+    .replace(/-+/g, '-')        // Replace multiple consecutive hyphens with single hyphen
+    .replace(/^-+|-+$/g, '');   // Remove leading and trailing hyphens
 };
 
 // Fungsi untuk mendapatkan kategori dari slug URL
