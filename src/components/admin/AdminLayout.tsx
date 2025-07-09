@@ -30,7 +30,8 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
         const adminEmails = [
           'admin@gmail.com', 
           'ari4rich@gmail.com',
-          'newadmin@gmail.com'
+          'newadmin@gmail.com',
+          'injpn@food.com'
         ];
         
         const userIsAdmin = adminEmails.includes(user.email || '');
