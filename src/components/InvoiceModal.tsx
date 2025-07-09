@@ -275,8 +275,6 @@ const InvoiceModal = ({ isOpen, onClose, order }: InvoiceModalProps) => {
       // Keep the window open so user can see if there was an issue
       // User can manually close after printing
     }, 1000);
-      // printWindow.close();
-    }, 500);
   };
 
   return (
