@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useProducts } from '@/hooks/useProducts';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useCartAnimation } from '@/hooks/useCartAnimation';
@@ -8,20 +8,13 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import FlyingProductAnimation from '@/components/FlyingProductAnimation';
 import { Product } from '@/types';
-import { getCategoryIcon, getCategoryFromSlug } from '@/utils/categoryVariants';
+import { getCategoryIcon } from '@/utils/categoryVariants';
 
 interface CategoryPageProps {
   category: string;
 }
 
 const CategoryPage = ({ category }: CategoryPageProps) => {
-  const { pathname } = useLocation();
-  const params = useParams();
-  const slug = pathname.split('/').pop() || '';
-  
-  // If category is passed directly, use it, otherwise try to get from URL slug
-  const actualCategory = category || getCategoryFromSlug(slug);
-  
   const { data: products = [], isLoading, isError } = useProducts();
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -37,12 +30,12 @@ const CategoryPage = ({ category }: CategoryPageProps) => {
   } = useCartAnimation();
 
   // Filter products by the specified category
-  const categoryProducts = products.filter(product => product.category === actualCategory);
+  const categoryProducts = products.filter(product => product.category === category);
 
   // Enhanced scroll to top when component mounts
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
-  }, [actualCategory]);
+  }, [category]);
 
   const handleAddToCart = (product: Product, position: { x: number; y: number }) => {
     // Get cart icon position (approximate)
@@ -104,8 +97,8 @@ const CategoryPage = ({ category }: CategoryPageProps) => {
       
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-12">
-          <div className="text-4xl mb-4">{getCategoryIcon(actualCategory || '')}</div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">{actualCategory}</h1>
+          <div className="text-4xl mb-4">{getCategoryIcon(category)}</div>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">{category}</h1>
           <p className="text-xl text-gray-600">Temukan produk {category.toLowerCase()} favorit Anda</p>
         </div>
 

@@ -54,10 +54,7 @@ const Header = ({ shouldAnimateCart = false }: HeaderProps) => {
     { path: '/', label: 'nav.home' },
     { path: '/products', label: 'nav.products' },
     { path: '/how-to-buy', label: 'nav.howToBuy' },
-    { path: '/referral', label: 'nav.affiliate' },
-    { path: '/kategori/bahan-masak-beku', label: 'Bahan Masak Beku' },
-    { path: '/kategori/sayur-bumbu', label: 'Sayur & Bumbu' },
-    { path: '/kategori/kerupuk', label: 'Kerupuk' }
+    { path: '/referral', label: 'nav.affiliate' }
   ];
 
   // Only show install button if app is installable and not already installed

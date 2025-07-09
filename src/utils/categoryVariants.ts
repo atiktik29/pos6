@@ -107,39 +107,6 @@ export const getCategoriesWithVariants = () => {
   return Object.keys(categoryVariants);
 };
 
-// Fungsi untuk mengubah nama kategori menjadi slug URL yang valid
-export const getCategorySlug = (category: string): string => {
-  return category.toLowerCase()
-    .replace(/\s+/g, '-')     // Replace spaces with hyphens
-    .replace(/&/g, '-')       // Replace & with hyphen
-    .replace(/[^a-z0-9-]/g, ''); // Remove any other special characters
-};
-
-// Fungsi untuk mendapatkan kategori dari slug URL
-export const getCategoryFromSlug = (slug: string): string | null => {
-  const categories = getCategoriesWithVariants();
-  
-  // Try to find a direct match first
-  for (const category of categories) {
-    if (getCategorySlug(category) === slug) {
-      return category;
-    }
-  }
-  
-  // If no direct match, try some common mappings
-  const slugMappings: Record<string, string> = {
-    'bahan-masak-beku': 'Bahan Masak Beku',
-    'sayur-bumbu': 'Sayur & Bumbu',
-    'kerupuk': 'Kerupuk',
-    'makanan-ringan': 'Makanan Ringan',
-    'bumbu-dapur': 'Bumbu Dapur',
-    'makanan-siap-saji': 'Makanan Siap Saji',
-    'sayur-bahan-segar': 'Sayur & Bahan Segar'
-  };
-  
-  return slugMappings[slug] || null;
-};
-
 // Fungsi untuk mendapatkan icon kategori
 export const getCategoryIcon = (category: string) => {
   return categoryVariants[category]?.icon || '📦';
